@@ -8,7 +8,7 @@ import basic
 import numpy as np
 import pandas as pd
 import pickle
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 import torch
 from torch.utils.data import DataLoader
@@ -499,9 +499,11 @@ if __name__ == '__main__':
     parser.add_argument('--mse_loss', action='store_true', help='use MAE loss')
     parser.add_argument('--mlp', action='store_true', help='use CNN-MLP model')
     parser.add_argument('--s_bat', type=int, default=100, help='batch size')
-    parser.add_argument('--out_class_fname', help='classification file name', default="class.txt", type=str)
+    #parser.add_argument('--out_class_fname', help='classification file name', default="class.txt", type=str)
+    parser.add_argument('--out_class_fname', help='classification file name', type=str)
     parser.add_argument('--input_class_fname', help='classification file name', type=str)
-    parser.add_argument('--model_fname', help='model file name', default="model_CNN.pth", type=str)
+    #parser.add_argument('--model_fname', help='model file name', default="model_CNN.pth", type=str)
+    parser.add_argument('--model_fname', help='model file name', type=str)
     parser.add_argument('--abl_type', help='abl_type', choices=['v','m','p'],type=str)
     parser.add_argument('--abl_dim', nargs='*' , help='abl_dim', type=int)
     parser.add_argument('--emb_name', help='embedding name',
