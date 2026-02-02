@@ -1,3 +1,4 @@
 # Raw data (not redistributed)
 data/raw/*.xlsx
 data/intermediate/*.pkl
+data/processed/*.pkl
