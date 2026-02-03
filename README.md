@@ -17,6 +17,11 @@ cd AA_emb                                  # Navigate to the RNAgg directory
 pip install -r requirements.txt            # Install the required dependencies
 ```
 
+Then, install PyTorch with CUDA 12.8 support:
+```
+pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128```
+
+
 ## Using Different Environments
 If you plan to use a different operating system, Python version, or CUDA version, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for this package :
 ```
