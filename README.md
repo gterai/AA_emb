@@ -56,8 +56,15 @@ over residue-level representations.
 ---
 
 ## Pipeline
+Download Supplementary Table 1 of Zeing et al. which is abailable from https://www.nature.com/articles/s41587-025-02712-x#Sec21. Then move 41587_2025_2712_MOESM3_ESM.xlsx to AA_emb/data/raw/.
+
+```
+bash scripts/1_embed.sh
+```
+
+
 ```
 cd AA_emb
 bash scripts/1_embed.sh
 ```
-
+This create protein embedding data 
