@@ -24,6 +24,7 @@ numpy
 pandas
 torch
 transformers
+openpyxl
 ```
 Using a GPU is strongly recommended and is **effectively required**, as running the program on a CPU results in prohibitively slow performance.
 
