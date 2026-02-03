@@ -86,8 +86,9 @@ Notes
 - GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
 
 ### Generate input data
-The following command generates the input file for model construction and evaluation. It contains translation efficiency (TE) values and mRNA seuqneces expressed as one-hot like representation described in the main paper.
 
+The following command generates the input file used for model training and evaluation.
+The file contains translation efficiency (TE) values and mRNA sequences represented in a one-hot–like format, as described in the main paper.
 ```
 bash scripts/2_prep.sh
 ```
@@ -97,7 +98,7 @@ AA_emb/data/processed/
 ```
 
 ### Learn and evaluate
-The following command conduct learning and evaluation of our TE prediction model.
+The following command performs training and evaluation of the translation efficiency (TE) prediction model.
 ```
 bash scripts/3_eval.sh
 ```
