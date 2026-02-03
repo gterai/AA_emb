@@ -84,6 +84,7 @@ AA_emb/data/intermediate/
 ```
 Notes
 - GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
+- Running 1_embed.sh can take a considerable amount of time. This script simply contains six independent command lines, which are executed sequentially. There are no dependencies among these commands, and each of them can be executed separately if desired.
 
 ### Generate input data
 
