@@ -19,7 +19,8 @@ pip install -r requirements.txt            # Install the required dependencies
 
 Then, install PyTorch with CUDA 12.8 support:
 ```
-pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128```
+pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128
+```
 
 
 ## Using Different Environments
