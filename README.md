@@ -6,17 +6,16 @@ and evaluating translation efficiency (TE) prediction models.
 ---
 
 # How to install
-This tool has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture. It is compatible with **Python 3.10**.
+This tool has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture with **Python 3.10.13** and CUDA 12.8.
+
 
 ## Installation Instructions
 To install RNAgg, please follow these steps:
 ```
-git clone https://github.com/gterai/RNAgg # Clone the repository
-cd RNAgg                                  # Navigate to the RNAgg directory
-pip install -r requirements.txt           # Install the required dependencies
-cd scripts                                # Navigate to the scripts directory
+git clone https://github.com/gterai/AA_emb # Clone the repository
+cd AA_emb                                  # Navigate to the RNAgg directory
+pip install -r requirements.txt            # Install the required dependencies
 ```
-Optionally, you can use GPU acceleration. However, the requirements.txt file was created for CUDA 11.8. The above instructions will work with GPU support if you use CUDA 11.8.
 
 ## Using Different Environments
 If you plan to use **a different operating system, Python version, or CUDA version**, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for RNAgg:
