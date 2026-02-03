@@ -60,7 +60,7 @@ Each model is used to generate sequence-level embeddings via mean pooling
 over residue-level representations.
 
 Note on the license of Ankh:
-- **Ankh is distributed under the CC BY-NC-SA 4.0 license.** When using Ankh, you must comply with the terms of this license.  See https://github.com/agemagician/Ankh/blob/main/LICENSE.md for details.
+- Ankh is licensed under CC BY-NC-SA 4.0 and may not be used for commercial purposes.　Users are responsible for ensuring compliance with the license terms.
 
 ---
 # Pipeline
