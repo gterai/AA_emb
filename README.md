@@ -5,6 +5,32 @@ and evaluating translation efficiency (TE) prediction models.
 
 ---
 
+# How to install
+This tool has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture. It is compatible with **Python 3.10**.
+
+## Installation Instructions
+To install RNAgg, please follow these steps:
+```
+git clone https://github.com/gterai/RNAgg # Clone the repository
+cd RNAgg                                  # Navigate to the RNAgg directory
+pip install -r requirements.txt           # Install the required dependencies
+cd scripts                                # Navigate to the scripts directory
+```
+Optionally, you can use GPU acceleration. However, the requirements.txt file was created for CUDA 11.8. The above instructions will work with GPU support if you use CUDA 11.8.
+
+## Using Different Environments
+If you plan to use **a different operating system, Python version, or CUDA version**, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for RNAgg:
+```
+numpy
+torch
+matplotlib
+joblib
+umap-learn
+```
+We recommend ensuring that the versions of these libraries are compatible with your system configuration to avoid potential issues.
+
+
+
 ## Overview
 
 This repository provides a complete pipeline for:
