@@ -71,12 +71,17 @@ into the following directory:
 AA_emb/data/raw/
 ```
 
-The following command creates six files each of which contains protein embedding data of amino acid sequences translated from mRNA sequences in the above excel file.
+### Generate protein embeddings
+The following command generates six protein embedding files, corresponding to different protein language models. Each file contains embeddings of amino acid sequences translated from the mRNA sequences provided in the Excel file above.
 ```
 cd AA_emb
 bash scripts/1_embed.sh
 ```
-The six files are located in the followin directory:
+
+After the script finishes, the generated embedding files will be located in:
 ```
-AA_emb/data/raw/
+AA_emb/data/intermediate/
 ```
+Notes
+•	GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
+•	The supplementary Excel file is subject to the original publisher’s license and is not included in this repository.
