@@ -54,15 +54,24 @@ Each model is used to generate sequence-level embeddings via mean pooling
 over residue-level representations.
 
 ---
-
 ## Pipeline
-Download Supplementary Table 1 of Zeing et al. which is abailable from https://www.nature.com/articles/s41587-025-02712-x#Sec21. Then move 41587_2025_2712_MOESM3_ESM.xlsx to AA_emb/data/raw/.
 
+### External data (not included)
+Please download **Supplementary Table 1** from the following paper:
+
+Zeing et al., *Nature Biotechnology* (2025)  
+https://www.nature.com/articles/s41587-025-02712-x#Sec21
+
+After downloading, place the file:
 ```
-bash scripts/1_embed.sh
+41587_2025_2712_MOESM3_ESM.xlsx
+```
+into the following directory:
+```
+AA_emb/data/raw/
 ```
 
-
+The following command creates six files each of which contains protein embedding data of amino acid sequence translated from mRNA sequence in the above excel file.
 ```
 cd AA_emb
 bash scripts/1_embed.sh
