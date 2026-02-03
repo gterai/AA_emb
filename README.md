@@ -83,5 +83,7 @@ After the script finishes, the generated embedding files will be located in:
 AA_emb/data/intermediate/
 ```
 Notes
-•	GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
-•	The supplementary Excel file is subject to the original publisher’s license and is not included in this repository.
+- GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
+- The supplementary Excel file is subject to the original publisher’s license and is not included in this repository.
+
+
