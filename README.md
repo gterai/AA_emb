@@ -86,7 +86,8 @@ Notes
 - GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
 
 ### Generate input data
-The following command generates six protein embedding files, corresponding to different protein language models. Each file contains embeddings of amino acid sequences translated from the mRNA sequences provided in the Excel file above.
+The following command generates the input file for model construction and evaluation. It contains translation efficiency (TE) values and mRNA seuqneces expressed as one-hot like representation described in the main paper.
+
 ```
 bash scripts/2_prep.sh
 ```
