@@ -104,7 +104,7 @@ AA_emb/data/processed/
 ```
 
 ### Learn and evaluate
-The following command performs training and evaluation of the translation efficiency (TE) prediction model.
+The following command performs training and evaluation of the translation efficiency (TE) prediction model, combining mRNA features and embedding of ProtT5_xl_BFD model. 
 ```
-bash scripts/3_eval.sh
+python evaluation/100eval.py data/processed/input.pkl --emb_name emb_T5b
 ```
