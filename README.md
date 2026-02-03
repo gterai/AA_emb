@@ -6,11 +6,11 @@ and evaluating translation efficiency (TE) prediction models.
 ---
 
 # How to install
-This tool has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture with **Python 3.10.13** and **CUDA 12.8**.
+This package has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture with **Python 3.10.13** and **CUDA 12.8**.
 
 
 ## Installation Instructions
-To install RNAgg, please follow these steps:
+To install package, please follow these steps:
 ```
 git clone https://github.com/gterai/AA_emb # Clone the repository
 cd AA_emb                                  # Navigate to the RNAgg directory
@@ -18,14 +18,14 @@ pip install -r requirements.txt            # Install the required dependencies
 ```
 
 ## Using Different Environments
-If you plan to use a different operating system, Python version, or CUDA version, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for RNAgg:
+If you plan to use a different operating system, Python version, or CUDA version, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for this package :
 ```
 numpy
 pandas
 torch
 transformers
 ```
-Using a GPU is strongly recommended and is effectively required, as running the program on a CPU results in prohibitively slow performance.
+Using a GPU is strongly recommended and is **effectively required**, as running the program on a CPU results in prohibitively slow performance.
 
 ## Overview
 
