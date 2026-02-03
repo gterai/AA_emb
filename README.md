@@ -59,8 +59,8 @@ contribute to translation efficiency prediction across multiple tissues and cell
 Each model is used to generate sequence-level embeddings via mean pooling
 over residue-level representations.
 
-Note on the lisence of Anhk:
-- Ankh is distributed under CC BY-NC-SA 4.0. You must follow it when using Ankh. See https://github.com/agemagician/Ankh/blob/main/LICENSE.md.
+Note on the license of Ankh:
+- **Ankh is distributed under the CC BY-NC-SA 4.0 license.** When using Ankh, you must comply with the terms of this license.  See https://github.com/agemagician/Ankh/blob/main/LICENSE.md for details.
 
 ---
 ## Pipeline
