@@ -37,7 +37,7 @@ sentencepiece
 ```
 Using a GPU is strongly recommended and is **effectively required**, as running the program on a CPU results in prohibitively slow performance.
 
-## Overview
+# Overview
 
 This repository provides a complete pipeline for:
 
@@ -63,7 +63,7 @@ Note on the license of Ankh:
 - **Ankh is distributed under the CC BY-NC-SA 4.0 license.** When using Ankh, you must comply with the terms of this license.  See https://github.com/agemagician/Ankh/blob/main/LICENSE.md for details.
 
 ---
-## Pipeline
+# Pipeline
 
 ### External data (not included)
 Please download **Supplementary Table 1** from the following paper:
