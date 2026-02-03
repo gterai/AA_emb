@@ -53,7 +53,7 @@ contribute to translation efficiency prediction across multiple tissues and cell
 ## Supported Protein Language Models
 
 - **Ankh** (ankh-base, ankh3-xl)
-- **ESM2** (esm2_t33_650m_ur50d, esm2 t36 3b ur50d)
+- **ESM2** (esm2_t33_650m_ur50d, esm2_t36_3b_ur50d)
 - **ProtT5** (prot_t5_xl_uniref50, prot_t5_xl_bfd)
 
 Each model is used to generate sequence-level embeddings via mean pooling
