@@ -22,12 +22,12 @@ If you plan to use a different operating system, Python version, or CUDA version
 ```
 numpy
 pandas
+openpyxl
 torch
 transformers
 protobuf
 #sentencepiece
 #tiktoken
-openpyxl
 ```
 Using a GPU is strongly recommended and is **effectively required**, as running the program on a CPU results in prohibitively slow performance.
 
