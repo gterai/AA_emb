@@ -27,6 +27,7 @@ torch
 transformers
 protobuf
 tiktoken
+sentencepiece
 ```
 Using a GPU is strongly recommended and is **effectively required**, as running the program on a CPU results in prohibitively slow performance.
 
