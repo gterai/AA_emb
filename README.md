@@ -6,7 +6,7 @@ and evaluating translation efficiency (TE) prediction models.
 ---
 
 # How to install
-This tool has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture with **Python 3.10.13** and CUDA 12.8.
+This tool has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture with **Python 3.10.13** and **CUDA 12.8**.
 
 
 ## Installation Instructions
@@ -21,14 +21,11 @@ pip install -r requirements.txt            # Install the required dependencies
 If you plan to use **a different operating system, Python version, or CUDA version**, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for RNAgg:
 ```
 numpy
+pandas
 torch
-matplotlib
-joblib
-umap-learn
+transformers
 ```
-We recommend ensuring that the versions of these libraries are compatible with your system configuration to avoid potential issues.
-
-
+Using a GPU is strongly recommended and is effectively required, as running the program on a CPU results in prohibitively slow performance.
 
 ## Overview
 
