@@ -26,8 +26,7 @@ openpyxl
 torch
 transformers
 protobuf
-#sentencepiece
-#tiktoken
+tiktoken
 ```
 Using a GPU is strongly recommended and is **effectively required**, as running the program on a CPU results in prohibitively slow performance.
 
