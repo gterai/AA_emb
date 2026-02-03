@@ -24,6 +24,7 @@ numpy
 pandas
 torch
 transformers
+protobuf
 sentencepiece
 tiktoken
 openpyxl
