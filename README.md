@@ -71,9 +71,12 @@ into the following directory:
 AA_emb/data/raw/
 ```
 
-The following command creates six files each of which contains protein embedding data of amino acid sequence translated from mRNA sequence in the above excel file.
+The following command creates six files each of which contains protein embedding data of amino acid sequences translated from mRNA sequences in the above excel file.
 ```
 cd AA_emb
 bash scripts/1_embed.sh
 ```
-This create protein embedding data 
+The six files are located in the followin directory:
+```
+AA_emb/data/raw/
+```
