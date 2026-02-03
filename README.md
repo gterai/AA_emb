@@ -98,7 +98,12 @@ AA_emb/data/intermediate/
 Notes
 - GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
 
-The following command generates the input file for model learning and evaluation. It containing translation efficiency (TE) information and mRNA sequence expressed as one-hot like format described in the main text.
+The following command generates the input file for model learning and evaluation. It contains translation efficiency (TE) information and mRNA sequence expressed as one-hot like format described in the main text.
 ```
 bash scripts/2_prep.sh
+```
+
+The following command conduct learning and evaluation of our TE prediction model.
+```
+bash scripts/3_eval.sh
 ```
