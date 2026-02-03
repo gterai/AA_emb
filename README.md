@@ -84,8 +84,7 @@ AA_emb/data/intermediate/
 ```
 Notes
 - GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
-- Running 1_embed.sh can take a considerable amount of time. This script simply contains six independent command lines, which are executed sequentially. There are no dependencies among these commands, and each of them can be executed separately if desired.
-
+- The execution of 1_embed.sh is time-consuming. The script contains six independent commands that are run sequentially, but they do not depend on each other. Users may run each command individually, for example to parallelize execution across multiple GPUs.
 ### Generate input data
 
 The following command generates the input file used for model training and evaluation.
