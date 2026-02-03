@@ -88,21 +88,14 @@ Notes
 ### Generate input data
 The following command generates six protein embedding files, corresponding to different protein language models. Each file contains embeddings of amino acid sequences translated from the mRNA sequences provided in the Excel file above.
 ```
-bash scripts/1_embed.sh
-```
-
-After the script finishes, the generated embedding files will be located in:
-```
-AA_emb/data/intermediate/
-```
-Notes
-- GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
-
-The following command generates the input file for model learning and evaluation. It contains translation efficiency (TE) information and mRNA sequence expressed as one-hot like format described in the main text.
-```
 bash scripts/2_prep.sh
 ```
+After the script finishes, the generated file will be located in:
+```
+AA_emb/data/processed/
+```
 
+### Learn and evaluate
 The following command conduct learning and evaluation of our TE prediction model.
 ```
 bash scripts/3_eval.sh
