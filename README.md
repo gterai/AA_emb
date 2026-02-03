@@ -15,11 +15,8 @@ To install package, please follow these steps:
 git clone https://github.com/gterai/AA_emb # Clone the repository
 cd AA_emb                                  # Navigate to the RNAgg directory
 pip install -r requirements.txt            # Install the required dependencies
-```
+pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128 # Install PyTorch with CUDA 12.8 support:
 
-Then, install PyTorch with CUDA 12.8 support:
-```
-pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128
 ```
 
 
