@@ -101,7 +101,7 @@ The file contains translation efficiency (TE) values and mRNA sequences represen
 ```
 bash scripts/2_prep.sh
 ```
-After the script finishes, the generated file will be located in:
+After the script finishes, the generated file **input.pkl** will be located in:
 ```
 AA_emb/data/processed/
 ```
