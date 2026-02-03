@@ -116,6 +116,21 @@ You can change embedding types by modifying --emb_name option. For example, when
 ```
 python evaluation/100eval.py data/processed/input.pkl --emb_name emb_esm2
 ```
-See --help option for further details.
+See help message (--help option) for further details.
 
-### Ablation study
+### Ablation studies
+The 100eval.py enables you to conduct ablation studies. When you want to mask (remove) mRNA features use, the following command:
+```
+python evaluation/100eval.py data/processed/input.pkl --emb_name emb_esm2 --abl_type m
+```
+
+When you want to mask (remove) features of protein embedding, use the following command:
+```
+python evaluation/100eval.py data/processed/input.pkl --emb_name emb_esm2 --abl_type p
+```
+
+When you want to mask (remove) part of mRNA features, use the following command:
+```
+python evaluation/100eval.py data/processed/input.pkl --emb_name emb_esm2 --abl_type v --abl_dim 0 1 2 3
+```
+The above command masks 0-3 th dimension of mRNA features which is expressed as a sequence of 6-dimensional vectors (as shown in Figure 1 of the main text). Hance, it masks nucleotide information of mRNA features.
