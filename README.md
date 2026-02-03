@@ -18,7 +18,7 @@ pip install -r requirements.txt            # Install the required dependencies
 ```
 
 ## Using Different Environments
-If you plan to use **a different operating system, Python version, or CUDA version**, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for RNAgg:
+If you plan to use a different operating system, Python version, or CUDA version, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for RNAgg:
 ```
 numpy
 pandas
