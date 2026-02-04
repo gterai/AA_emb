@@ -157,7 +157,7 @@ TE_BJ 0.75695264
 ```
 -	The first two lines (starting with #) are comments and can be ignored.
 -	Each subsequent line consists of:
-  -	the name of a tissue or cell type, and
+	-	the name of a tissue or cell type, and
 	-	the corresponding prediction accuracy, reported as Pearson’s correlation coefficient between the predicted and observed translation efficiency.
 
 Each row therefore represents the prediction performance for one tissue or cell type.
