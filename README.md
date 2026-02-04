@@ -124,15 +124,16 @@ python evaluation/100eval.py --help
 
 ### Ablation studies
 The script 100eval.py also allows you to perform ablation studies.
-•	Remove mRNA features:
+
+**•	Remove mRNA features:**
 ```
 python evaluation/100eval.py data/processed/input.pkl --emb_name emb_esm2 --abl_type m
 ```
-•	Remove protein embedding features:
+**•	Remove protein embedding features:**
 ```
 python evaluation/100eval.py data/processed/input.pkl --emb_name emb_esm2 --abl_type p
 ```
-•	Remove part of the mRNA features:
+**•	Remove part of the mRNA features:**
 ```
 python evaluation/100eval.py data/processed/input.pkl --emb_name emb_esm2 --abl_type v --abl_dim 0 1 2 3
 ```
