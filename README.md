@@ -141,3 +141,23 @@ The command above masks dimensions 0–3 of the mRNA feature vectors.
 Each mRNA feature is represented as a sequence of 6-dimensional vectors
 (see Figure 1 in the main text). Hence, this operation removes nucleotide
 information from the mRNA features.
+
+
+### Output data format
+The output of the 100eval.py script has the following format:
+```
+#best_val_epoch: 82
+#test: loss=0.4523419775031244 0.7555938 0.7492022362092843
+TE_108T 0.74902064
+TE_12T 0.67797637
+TE_A2780 0.7211408
+TE_A549 0.7348078
+TE_BJ 0.75695264
+...
+```
+-	The first two lines (starting with #) are comments and can be ignored.
+-	Each subsequent line consists of:
+  -	the name of a tissue or cell type, and
+	-	the corresponding prediction accuracy, reported as Pearson’s correlation coefficient between the predicted and observed translation efficiency.
+
+Each row therefore represents the prediction performance for one tissue or cell type.
