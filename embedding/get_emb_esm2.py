@@ -63,6 +63,19 @@ def main(args: dict):
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     model = EsmModel.from_pretrained(MODEL_NAME)
+
+    ## special tokenの確認
+    #print(tokenizer.all_special_tokens)
+    #print(tokenizer.all_special_ids)
+    ##exit(0)
+
+    ## 通常トークンの確認
+    #vocab = tokenizer.get_vocab()
+    #id2tok = {tid: tok for tok, tid in vocab.items()}
+    #for tid in range(50):
+    #    print(tid, id2tok[tid])
+    #exit(0)
+    
     
     params = 0
     for p in model.parameters():

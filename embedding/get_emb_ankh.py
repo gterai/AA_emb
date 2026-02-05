@@ -63,6 +63,18 @@ def main(args: dict):
 
     tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME)
     model = T5EncoderModel.from_pretrained(MODEL_NAME)
+
+    # special tokenの確認
+    #print(tokenizer.all_special_tokens)
+    #print(tokenizer.all_special_ids)
+    #exit(0)
+
+    # 通常トークンの確認
+    #vocab = tokenizer.get_vocab()
+    #id2tok = {tid: tok for tok, tid in vocab.items()}
+    #for tid in range(50):
+    #    print(tid, id2tok[tid])
+    #exit(0)
     
     params = 0
     for p in model.parameters():
@@ -85,18 +97,39 @@ def main(args: dict):
     for i in range(0, len(protein_sequences), BATCH_SIZE):
         print(f"progress:{i}/{len(protein_sequences)} {args.mtype}", file=sys.stderr)
         
-        batch_seqs     = protein_sequences[i : i + BATCH_SIZE]
-        batch_seqs_NLU = ["[NLU]" + seq for seq in batch_seqs] # [NLU]を加える
-        
+        batch_seqs_org = protein_sequences[i : i + BATCH_SIZE]
+        if args.mtype == "ank3":
+            batch_seqs = ["[NLU]" + seq for seq in batch_seqs_org] # [NLU]を加える
+        else:
+            batch_seqs = batch_seqs_org
+            
         # --- tokenize ---
         inputs = tokenizer(
             batch_seqs,
             add_special_tokens=True,
             padding=True,
-            truncation=True,
+            truncation=False,
             return_tensors="pt",
             is_split_into_words=False,
         )
+        
+        # ankでは、unk(2)+AAseq+</s>(1)となる
+        # ank3では、unk(2)+[NLU]+(4)>AAseq+</s>(1)となる
+        # どちらのモデルでもtokenizeすると"_"が先頭に追加される
+        # これがunkに対応する。
+        
+        # 結局、出力されるhidden stateの長さは、
+        # ankではAAlen + 2, ank3ではAAlen + 3となる。
+
+        
+        #print(inputs)
+        #tokens = tokenizer.tokenize(batch_seqs[0])
+        #tokens = tokenizer.tokenize('[NLU]')
+        #print(tokens)
+        #print(len(tokens))
+        #print(batch_seqs_org[0])
+        #print(len(batch_seqs_org[0]))
+        
         # GPUへ
         inputs = {k: v.to(device) for k, v in inputs.items()}
         with torch.no_grad():
@@ -104,17 +137,30 @@ def main(args: dict):
 
         # (B, L, D)
         hidden_states = outputs.last_hidden_state
+        #print(hidden_states.shape)
+        #exit(0)
         
         # --- mask作成 ---
         mask = inputs["attention_mask"].unsqueeze(-1)  # (B, L, 1)
+        #print(mask.shape)
         
-        # --- <eos> を除外 ---
+        # --- <\s> を除外 ---
         eos_id = tokenizer.eos_token_id
         eos_positions = inputs["input_ids"] == eos_id   # (B, L)
         mask[eos_positions.unsqueeze(-1)] = 0
 
+        # --- unkを除外 ---
+        mask[:,0,:] = 0
+
+        # --- [NLU]を除外 --- (ank3のみ)
+        if args.mtype == "ank3":
+            mask[:,1,0] = 0
+
+        #print(mask)
+        #exit(0)
+        
         # 配列長とmask長の比較
-        check_mask_vs_sequence_length(batch_seqs, inputs, mask, tokenizer)
+        check_mask_vs_sequence_length(batch_seqs_org, inputs, mask, tokenizer)
         
         # --- mean pooling ---
         hidden_states = hidden_states * mask
@@ -169,7 +215,7 @@ def check_mask_vs_sequence_length(seqs, inputs, mask, tokenizer):
         #    f"tokenized length (incl. special) = {token_len}"
         #)
 
-        if aa_len + 1 != mask_len: # +1は[NLU]の分
+        if aa_len != mask_len: # 
             print(
                 f"ERROR: MISMATCH detected!"
                 f"(AA={aa_len}, mask={mask_len})"

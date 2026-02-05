@@ -64,6 +64,20 @@ def main(args: dict):
     tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME, do_lower_case=False)
     model = T5EncoderModel.from_pretrained(MODEL_NAME)
 
+
+    # special tokenの確認
+    #print(tokenizer.all_special_tokens)
+    #print(tokenizer.all_special_ids)
+    ##exit(0)
+
+    # 通常トークンの確認
+    #vocab = tokenizer.get_vocab()
+    #id2tok = {tid: tok for tok, tid in vocab.items()}
+    #for tid in range(50):
+    #    print(tid, id2tok[tid])
+    #exit(0)
+
+    
     params = 0
     for p in model.parameters():
         if p.requires_grad:
@@ -92,6 +106,9 @@ def main(args: dict):
                 padding=True,
                 return_tensors="pt"
             )
+
+            #print(tokens)
+            #exit(0)
             
             input_ids = tokens["input_ids"].to(device)
             attention_mask = tokens["attention_mask"].to(device)
@@ -114,7 +131,10 @@ def main(args: dict):
                 # --- <eos> を除外 ---
                 eos_positions = (input_ids[j] == eos_id)
                 mask[eos_positions] = 0
-                
+
+                #print(mask)
+                #exit(0)
+
                 # (L, 1)
                 mask = mask.unsqueeze(-1)
                 
