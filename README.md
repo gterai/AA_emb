@@ -5,6 +5,13 @@ and evaluating translation efficiency (TE) prediction models.
 
 ---
 
+# GPU Memory Requirement
+
+This system relies on large-scale protein language models, which require substantial GPU memory to run efficiently.
+We strongly recommend using a GPU with at least 48 GB of memory. Using GPUs with smaller memory may lead to out-of-memory errors.
+
+---
+
 # How to install
 This package has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture with **Python 3.10.13** and **CUDA 12.8**.
 
