@@ -51,7 +51,7 @@ def main(args: dict):
         
     # GPU があれば cuda, なければ cpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print("Using device:", device)
+    print("Using device:", device,file=sys.stderr)
     
     if args.mtype == "esm2":
         MODEL_NAME = "facebook/esm2_t33_650M_UR50D"
@@ -82,7 +82,7 @@ def main(args: dict):
     # =========================
     BATCH_SIZE=2
     for i in range(0, len(protein_sequences), BATCH_SIZE):
-        print(f"progress:{i}")
+        print(f"progress:{i}/{len(protein_sequences)} {args.mtype}",file=sys.stderr)
         
         batch_seqs = protein_sequences[i : i + BATCH_SIZE]
         #print(batch_seqs)
@@ -128,7 +128,7 @@ def main(args: dict):
     # (N, hidden_dim)
     all_mean_embeddings = torch.cat(all_mean_embeddings, dim=0)
     embeddings = all_mean_embeddings.detach().numpy() 
-    print(embeddings.shape)
+    #print(embeddings.shape,file=sys.stderr)
     
     sid2emb = {}
     for i, sid in enumerate(sid_list):
