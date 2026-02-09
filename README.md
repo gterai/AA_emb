@@ -35,6 +35,7 @@ If you plan to use a different operating system, Python version, or CUDA version
 ```
 numpy
 pandas
+scipy
 openpyxl
 torch
 transformers
@@ -100,7 +101,7 @@ AA_emb/data/intermediate/
 ```
 Notes
 - GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
-- The execution of 1_embed.sh is time-consuming and typically requires approximately **12–18 hours**, depending on the GPU configuration.
+- The execution of 1_embed.sh is time-consuming and typically requires approximately **6–12 hours**, depending on the GPU configuration.
 - The 1_embed.sh script contains six independent commands that are run sequentially, but they do not depend on each other. Users may run each command individually, for example to parallelize execution across multiple GPUs.
 ### Generate input data
 
