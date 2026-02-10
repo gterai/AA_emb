@@ -55,10 +55,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('ft_pkl', help='input pickle file')
     parser.add_argument('out_pkl', help='output file name')
-    parser.add_argument('--emb_pkl', type=str, nargs=6, required=True,
-                        help='List of 6 embedding pickle files')
-    parser.add_argument('--emb_name', type=str, nargs=6, required=True,
-                        help='List of 6 embedding names')
+    parser.add_argument('--emb_pkl', type=str, nargs='*', required=True,
+                        help='List of embedding pickle files')
+    parser.add_argument('--emb_name', type=str, nargs='*', required=True,
+                        help='List of embedding names')
     args = parser.parse_args()
 
     main(args)
