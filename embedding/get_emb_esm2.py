@@ -34,7 +34,7 @@ def main(args: dict):
         
         seq_5utr = seq[:len_dict['5utr']]
         seq_cds  = seq[len_dict['5utr']:len_dict['5utr']+len_dict['cds']]
-        seq_3utr = seq[:len_dict['5utr']+len_dict['cds']:]
+        seq_3utr = seq[len_dict['5utr']+len_dict['cds']:]
         
         aa = codon_lib.translate(seq_cds, codon2aa)
         aa = aa[:-1]  # 終始コドンは除く
