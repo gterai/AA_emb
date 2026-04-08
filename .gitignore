@@ -1,4 +1,7 @@
 # Raw data (not redistributed)
 data/raw/*.xlsx
 data/intermediate/*.pkl
-data/processed/*.pkl
+data/intermediate/*.pkl.gz
+data/processed/*.pkl.gz
+class.txt
+model_CNN.pth
