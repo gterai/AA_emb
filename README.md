@@ -51,8 +51,9 @@ This repository provides a complete pipeline for:
 
 1. Generating **protein sequence embeddings** using pretrained protein language models
 2. Generating **amino acid composition features** (20-dimensional frequency vectors)
-3. Constructing machine-learning-ready input datasets
-4. Evaluating translation efficiency prediction performance, including **ablation studies**
+3. Generating **di-peptide composition features** (400-dimensional frequency vectors)
+4. Constructing machine-learning-ready input datasets
+5. Evaluating translation efficiency prediction performance, including **ablation studies**
 
 The codebase was developed for systematic evaluation of how amino acid embeddings
 contribute to translation efficiency prediction across multiple tissues and cell types.
@@ -65,6 +66,7 @@ contribute to translation efficiency prediction across multiple tissues and cell
 - **ESM2** (esm2_t33_650m_ur50d, esm2_t36_3b_ur50d)
 - **ProtT5** (prot_t5_xl_uniref50, prot_t5_xl_bfd)
 - **AA composition** (20-dimensional normalized amino acid frequencies)
+- **Di-peptide composition** (400-dimensional normalized adjacent amino acid frequencies)
 
 Each model is used to generate sequence-level embeddings via mean pooling
 over residue-level representations.
@@ -91,7 +93,7 @@ AA_emb/data/raw/
 ```
 
 ### Generate protein embeddings
-The following command generates six protein embedding files and one amino acid composition feature file. Each file contains sequence-level features derived from amino acid sequences translated from the mRNA sequences provided in the Excel file above.
+The following command generates six protein embedding files, one amino acid composition feature file, and one di-peptide composition feature file. Each file contains sequence-level features derived from amino acid sequences translated from the mRNA sequences provided in the Excel file above.
 ```
 cd AA_emb
 bash scripts/1_embed.sh
@@ -104,7 +106,7 @@ AA_emb/data/intermediate/
 Notes
 - GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
 - The execution of 1_embed.sh is time-consuming and typically requires approximately **6–12 hours**, depending on the GPU configuration.
-- The protein language model commands in 1_embed.sh are independent and can be parallelized across multiple GPUs if needed. The amino acid composition feature generation is lightweight and CPU-friendly.
+- The protein language model commands in 1_embed.sh are independent and can be parallelized across multiple GPUs if needed. The amino acid composition and di-peptide composition feature generation are lightweight and CPU-friendly.
 ### Generate input data
 
 The following command generates the input file used for model training and evaluation.
@@ -130,6 +132,10 @@ python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_es
 To use amino acid composition features instead, run:
 ```
 python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_aacomp
+```
+To use di-peptide composition features instead, run:
+```
+python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_dipep
 ```
 For additional options, see the help message:
 ```
