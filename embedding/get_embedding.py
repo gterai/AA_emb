@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 SCRIPT_MAP = {
-    "aacomp": "get_emb_aacomp.py",
+    "aacom": "get_emb_aacom.py",
     "dipep": "get_emb_dipep.py",
     "ank": "get_emb_ankh.py",
     "ank3": "get_emb_ankh.py",
@@ -34,7 +34,7 @@ def main():
     script_dir = Path(__file__).resolve().parent
     script_name = SCRIPT_MAP[args.model]
     cmd = [sys.executable, str(script_dir / script_name), args.xlsx, args.out_pkl]
-    if args.model not in {"aacomp", "dipep"}:
+    if args.model not in {"aacom", "dipep"}:
         cmd.extend(["--mtype", args.model])
 
     print("Running:", " ".join(cmd), file=sys.stderr)

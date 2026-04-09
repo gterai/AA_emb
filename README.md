@@ -131,7 +131,7 @@ python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_es
 ```
 To use amino acid composition features instead, run:
 ```
-python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_aacomp
+python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_aacom
 ```
 To use di-peptide composition features instead, run:
 ```
