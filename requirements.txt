@@ -58,5 +58,5 @@ typer-slim==0.21.1
 typing_extensions==4.15.0
 tzdata==2025.3
 urllib3==2.6.3
-scipy==1.17.1
+scipy==1.15.3
 setuptools==70.2.0
