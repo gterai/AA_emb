@@ -4,7 +4,7 @@ import os
 import sys
 import argparse
 sys.path.append(os.environ['HOME'] + "/pyscript")
-import basic
+#import basic
 import numpy as np
 import pandas as pd
 import pickle
