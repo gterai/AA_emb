@@ -3,5 +3,5 @@ data/raw/*.xlsx
 data/intermediate/*.pkl
 data/intermediate/*.pkl.gz
 data/processed/*.pkl.gz
-class.txt
+class.txt*
 model_CNN.pth
