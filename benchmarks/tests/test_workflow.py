@@ -1,4 +1,4 @@
-"""Checks for fixed-partition publication and run-command construction (no GPU)."""
+"""Checks for fixed-partition validation and run-command construction (no GPU)."""
 import importlib.util
 from pathlib import Path
 import subprocess
@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('validate_revision', ROOT/'scripts/validate_revision.py')
+spec = importlib.util.spec_from_file_location('validate_benchmarks', ROOT/'scripts/validate_benchmarks.py')
 validation = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(validation)
 
@@ -26,7 +26,7 @@ class WorkflowTests(unittest.TestCase):
     def test_run_matrix_and_protein_only_ablation(self):
         for analysis, count in [('protein', 90), ('function', 120)]:
             with tempfile.TemporaryDirectory() as directory:
-                result = subprocess.run([sys.executable, str(ROOT/'scripts/run_revision.py'),
+                result = subprocess.run([sys.executable, str(ROOT/'scripts/run_benchmarks.py'),
                     analysis, '--dry-run', '--output', str(Path(directory)/'runs')],
                     text=True, capture_output=True, check=True)
                 commands = [line for line in result.stdout.splitlines() if '--metrics_tsv' in line]
@@ -40,7 +40,7 @@ class WorkflowTests(unittest.TestCase):
     def test_existing_run_is_not_overwritten(self):
         with tempfile.TemporaryDirectory() as directory:
             (Path(directory)/'mrna_only/c50/seed_0').mkdir(parents=True)
-            result = subprocess.run([sys.executable, str(ROOT/'scripts/run_revision.py'), 'protein',
+            result = subprocess.run([sys.executable, str(ROOT/'scripts/run_benchmarks.py'), 'protein',
                 '--dry-run', '--groups', 'c50', '--seeds', '0', '--conditions', 'mrna_only',
                 '--output', directory], text=True, capture_output=True)
             self.assertNotEqual(result.returncode, 0)

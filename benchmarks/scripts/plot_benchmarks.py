@@ -53,7 +53,7 @@ def main():
         axes[0].set_title('Protein-cluster partitions')
         axes[1].set_title('Leave-one-function-out with c50 exclusion')
         for ext in ['png','pdf']:
-            fig.savefig(a.output/f'revision_{metric}.{ext}',dpi=180)
+            fig.savefig(a.output/f'benchmarks_{metric}.{ext}',dpi=180)
         plt.close(fig)
 
 

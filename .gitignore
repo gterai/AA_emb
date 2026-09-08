@@ -17,7 +17,7 @@ model_CNN.pth
 __pycache__/
 *.pyc
 .DS_Store
-/revision/runs/
-/revision/results/
+/benchmarks/runs/
+/benchmarks/results/
 # Explicitly include the published fixed partitions.
-!/revision/splits/**/class.txt
+!/benchmarks/splits/**/class.txt

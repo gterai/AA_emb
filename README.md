@@ -1,189 +1,139 @@
 # AA_emb
 
-## Revision: protein-cluster and functional holdout evaluation
+AA_emb is a research toolkit for predicting translation efficiency (TE) across
+78 human cell and tissue types using mRNA sequence features and protein language
+model embeddings. It supports mRNA-only, protein-only and combined models, with
+fixed benchmarks for protein sequence similarity and held-out biological functions.
 
-See [revision/README.md](revision/README.md) to train on the published c50/c70/c90
-and leave-one-function-out splits using the existing `input.pkl.gz`. The revision
-includes fixed partitions, per-tissue reference metrics, aggregation and plotting
-code. Embeddings and model checkpoints are not distributed.
+## Choose a workflow
 
-A research-oriented Python toolkit for generating amino acid sequence embeddings
-and evaluating translation efficiency (TE) prediction models.
+| Goal | Start here |
+| --- | --- |
+| Recreate benchmark statistics and figures without training | [Quick example](#quick-example-no-gpu-required) |
+| Generate embeddings and prepare model inputs | [Prepare the input](#prepare-the-input) |
+| Train and evaluate a model | [Train a model](#train-a-model) |
+| Compare models on c50/c70/c90 or functional holdouts | [Benchmark guide](benchmarks/README.md) |
+| Check data integrity and run workflow tests | [Testing guide](benchmarks/TESTING.md) |
 
----
+Pretrained weights, generated embeddings, trained checkpoints and raw source
+data are not distributed. Users obtain the source data and pretrained models,
+and generate embeddings locally using the scripts below.
 
-# GPU Memory Requirement
+## Installation
 
-This system relies on large-scale protein language models, which require substantial GPU memory to run efficiently.
-We strongly recommend using a GPU with at least 48 GB of memory. Using GPUs with smaller memory may lead to out-of-memory errors.
+Clone this repository and enter its directory:
 
----
-
-# How to install
-This package has been tested in a **Linux environment** running on an **Intel64 (x86_64)** architecture with **Python 3.10.13** and **CUDA 12.8**.
-
-
-## Installation Instructions
-To install package, please follow these steps:
-```
-git clone https://github.com/gterai/AA_emb_private AA_emb # Clone the private repository
-cd AA_emb                                  # Navigate to the RNAgg directory
-pip install -r requirements.txt            # Install the required dependencies
-```
-
-Then, install PyTorch with CUDA 12.8 support:
-```
-pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128 
-```
-
-
-## Using Different Environments
-If you plan to use a different operating system, Python version, or CUDA version, you may need to install appropriate package versions that are compatible with your environment. Below is a list of key dependencies required for this package :
-```
-numpy
-pandas
-scipy
-openpyxl
-torch
-transformers
-protobuf
-tiktoken
-sentencepiece
-```
-Using a GPU is strongly recommended and is **effectively required**, as running the program on a CPU results in prohibitively slow performance.
-
-# Overview
-
-This repository provides a complete pipeline for:
-
-1. Generating **protein sequence embeddings** using pretrained protein language models
-2. Generating **amino acid composition features** (20-dimensional frequency vectors)
-3. Generating **di-peptide composition features** (400-dimensional frequency vectors)
-4. Constructing machine-learning-ready input datasets
-5. Evaluating translation efficiency prediction performance, including **ablation studies**
-
-The codebase was developed for systematic evaluation of how amino acid embeddings
-contribute to translation efficiency prediction across multiple tissues and cell types.
-
----
-
-## Supported Protein Language Models
-
-- **Ankh** (ankh-base, ankh3-xl)
-- **ESM2** (esm2_t33_650m_ur50d, esm2_t36_3b_ur50d)
-- **ProtT5** (prot_t5_xl_uniref50, prot_t5_xl_bfd)
-- **AA composition** (20-dimensional normalized amino acid frequencies)
-- **Di-peptide composition** (400-dimensional normalized adjacent amino acid frequencies)
-
-Each model is used to generate sequence-level embeddings via mean pooling
-over residue-level representations.
-
-Note on the license of Ankh:
-- Ankh is licensed under CC BY-NC-SA 4.0 and may not be used for commercial purposes.　Users are responsible for ensuring compliance with the license terms.
-
----
-# Pipeline
-
-### External data (not included)
-Please download **Supplementary Table 1** from the following paper:
-
-Zeing et al., *Nature Biotechnology* (2025)  
-https://www.nature.com/articles/s41587-025-02712-x#Sec21
-
-After downloading, place the file:
-```
-41587_2025_2712_MOESM3_ESM.xlsx
-```
-into the following directory:
-```
-AA_emb/data/raw/
-```
-
-### Generate protein embeddings
-The following command generates six protein embedding files, one amino acid composition feature file, and one di-peptide composition feature file. Each file contains sequence-level features derived from amino acid sequences translated from the mRNA sequences provided in the Excel file above.
-```
+```bash
+git clone https://github.com/gterai/AA_emb_private AA_emb
 cd AA_emb
+```
+
+For model input preparation and training, the existing pipeline provides a
+Linux x86_64 environment using Python 3.10.13 and CUDA 12.8:
+
+```bash
+pip install -r requirements.txt
+pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128
+pip install -r benchmarks/requirements.txt
+```
+
+Use an appropriate PyTorch build for other platforms. The full embedding pipeline
+uses large protein language models; a GPU with at least 48 GB memory is recommended.
+CPU embedding generation and full training can be very slow. Requirements depend
+on the chosen model, sequence lengths and batch size.
+
+For statistics and plotting only, install the lightweight dependencies below;
+PyTorch, pretrained models and the source dataset are not required.
+
+## Quick example (no GPU required)
+
+Run these commands from the repository root to recreate summary tables and
+figures from the included per-tissue benchmark metrics:
+
+```bash
+pip install -r benchmarks/requirements.txt
+python benchmarks/scripts/validate_benchmarks.py
+python benchmarks/scripts/summarize_protein_cluster_baseline_t5u.py benchmarks/reference_metrics/protein_cluster_baseline benchmarks/results/protein_cluster_baseline
+python benchmarks/scripts/summarize_go_slim_holdout.py benchmarks/reference_metrics/go_slim_holdout benchmarks/results/go_slim_holdout
+python benchmarks/scripts/plot_benchmarks.py --results benchmarks/results --output benchmarks/results/figures
+```
+
+The output includes Pearson and Spearman comparison figures as PNG/PDF files in
+`benchmarks/results/figures/`. This example reproduces statistics and plots from
+existing measurements; it does not retrain models or regenerate predictions.
+
+## Prepare the input
+
+1. Download Supplementary Table 1 from the [source study in Nature Biotechnology](https://www.nature.com/articles/s41587-025-02712-x#Sec21).
+2. Place `41587_2025_2712_MOESM3_ESM.xlsx` in `data/raw/`.
+3. Generate protein features and construct the training input:
+
+```bash
 bash scripts/1_embed.sh
-```
-
-After the script finishes, the generated embedding files will be located in:
-```
-AA_emb/data/intermediate/
-```
-Notes
-- GPU is **strongly recommended**, as embedding generation on CPU is extremely slow.
-- The execution of 1_embed.sh is time-consuming and typically requires approximately **6–12 hours**, depending on the GPU configuration.
-- The protein language model commands in 1_embed.sh are independent and can be parallelized across multiple GPUs if needed. The amino acid composition and di-peptide composition feature generation are lightweight and CPU-friendly.
-### Generate input data
-
-The following command generates the input file used for model training and evaluation.
-The file contains translation efficiency (TE) values and mRNA sequences represented in a one-hot–like format, as described in the main paper.
-```
 bash scripts/2_prep.sh
 ```
-After the script finishes, the generated file **input.pkl.gz** will be located in:
-```
-AA_emb/data/processed/
+
+The resulting file is `data/processed/input.pkl.gz`. It contains transcript IDs,
+encoded mRNA inputs, TE values and masks, protein features, and the ordered list
+of 78 output tissues. Treat it as a locally generated file; it is ignored by Git.
+
+The embedding pipeline supports:
+
+| Representation | Input key |
+| --- | --- |
+| ProtT5 UniRef50 | `emb_T5u` |
+| ProtT5 BFD | `emb_T5b` |
+| ESM-2 650M / 3B | `emb_esm2` / `emb_esm2L` |
+| Ankh base / Ankh3 XL | `emb_ank` / `emb_ank3` |
+| Amino acid composition (20 features) | `emb_aacom` |
+| Dipeptide composition (400 features) | `emb_dipep` |
+
+## Train a model
+
+For a single run with the default split and seed:
+
+```bash
+# mRNA-only
+python evaluation/eval_multiemb.py data/processed/input.pkl.gz
+
+# mRNA + T5u
+python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_T5u
+
+# T5u-only (zero the mRNA representation)
+python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_T5u --abl_type m
 ```
 
-### Learn and evaluate
-The following command performs training and evaluation of the translation efficiency (TE) prediction model by combining mRNA features with embeddings generated by the prot_t5_xl_bfd model.
-```
-python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_T5b
+The default evaluator saves `model_CNN.pth` and `class.txt` in the working
+directory. Supply distinct `--model_fname` and `--out_class_fname` values for
+separate runs. Use `--metrics_tsv path/to/metrics.tsv` to write the tissue name,
+Pearson correlation, Spearman correlation and observed test sample count.
+See `python evaluation/eval_multiemb.py --help` for all options.
+
+To compare against the reference results, use the fixed benchmark workflows
+rather than the evaluator's default split:
+
+```bash
+python benchmarks/scripts/run_benchmarks.py protein --device cuda
+python benchmarks/scripts/run_benchmarks.py function --device cuda
 ```
 
-You can change the embedding type by modifying the --emb_name option. For example, to use embeddings generated by the esm2_t33_650m_ur50d model, run the following command:
-```
-python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_esm2
-```
-To use amino acid composition features instead, run:
-```
-python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_aacom
-```
-To use di-peptide composition features instead, run:
-```
-python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_dipep
-```
-For additional options, see the help message:
-```
-python evaluation/eval_multiemb.py --help
-```
+The [benchmark guide](benchmarks/README.md) explains the partitions, model
+conditions, run selection, statistical comparisons and output files.
 
+## Repository layout
 
-### Ablation studies
-The script eval_multiemb.py also allows you to perform ablation studies.
+| Directory | Contents |
+| --- | --- |
+| `embedding/` | Protein embedding and composition feature generation |
+| `preprocessing/` | Source data processing and input assembly |
+| `evaluation/` | Model definitions, training and evaluation |
+| `scripts/` | Embedding and input preparation entry points |
+| `benchmarks/` | Fixed partitions, reference metrics, benchmark runners and analysis |
+| `data/` | Locations for locally obtained source data and generated inputs |
 
-**•	Remove mRNA features:**
-```
-python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_esm2 --abl_type m
-```
-**•	Remove protein embedding features:**
-```
-python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_esm2 --abl_type p
-```
-**•	Remove part of the mRNA features:**
-```
-python evaluation/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_esm2 --abl_type v --abl_dim 0 1 2 3
-```
-The command above masks dimensions 0–3 of the mRNA feature vectors.
-Each mRNA feature is represented as a sequence of 6-dimensional vectors
-(see Figure 1 in the main text). Hence, this operation removes nucleotide
-information from the mRNA features.
+## License and model usage
 
-
-### Output data format
-
-The evaluation script writes comment lines describing the selected epoch and
-aggregate test performance, followed by a three-column table:
-
-```text
-tissue	pearson	spearman
-TE_108T	...	...
-TE_12T	...	...
-```
-
-Use `--metrics_tsv path/to/metrics.tsv` for a standalone machine-readable table
-with `tissue`, `pearson`, `spearman`, and `n_test` (the tissue-specific number of
-observed test targets). `--input_class_fname` accepts a fixed split file and
-preserves the order within each subset. See [revision/README.md](revision/README.md)
-for the c50/c70/c90 and leave-one-function-out workflows.
+The repository code is provided under the [MIT license](LICENSE). Pretrained
+models and upstream datasets retain their own terms; consult their distribution
+pages before use. The [license notice](LICENSE) includes information about Ankh.
+Model weights and embeddings are not redistributed by this repository.

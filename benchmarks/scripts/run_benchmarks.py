@@ -7,7 +7,7 @@ from pathlib import Path
 import shlex
 import subprocess
 import sys
-from validate_revision import validate_assets
+from validate_benchmarks import validate_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parent
@@ -65,7 +65,7 @@ def main():
             print(shlex.join(command))
         return
     # Validate in a separate process so the large input is released before training.
-    subprocess.run([sys.executable, str(ROOT / 'scripts/validate_revision.py'), '--input', str(a.input.resolve())], check=True)
+    subprocess.run([sys.executable, str(ROOT / 'scripts/validate_benchmarks.py'), '--input', str(a.input.resolve())], check=True)
     environment = dict(os.environ)
     environment.setdefault('CUBLAS_WORKSPACE_CONFIG', ':4096:8')
     for run, command in commands:
