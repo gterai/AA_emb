@@ -48,20 +48,27 @@ PyTorch, pretrained models and the source dataset are not required.
 ## Recreate tables and figures from reference results (no GPU required)
 
 Run these commands from the repository root to recreate summary tables and
-the paper's three-panel robustness figure (`FigRob`) and its Spearman counterpart
-(`SFigRob_spearman`) from the included reference metrics and control summaries:
+the paper's model comparison (`FigMain`) and robustness (`FigRob`) figures,
+including their Spearman counterparts, from the included reference metrics and
+control summaries:
 
 ```bash
 pip install -r benchmarks/requirements.txt
 python benchmarks/scripts/validate_benchmarks.py
+python benchmarks/scripts/plot_main_comparison.py
 python benchmarks/scripts/summarize_protein_cluster_baseline_t5u.py benchmarks/reference_metrics/protein_cluster_baseline benchmarks/results/protein_cluster_baseline
 python benchmarks/scripts/summarize_go_slim_holdout.py benchmarks/reference_metrics/go_slim_holdout benchmarks/results/go_slim_holdout
 python benchmarks/scripts/plot_benchmarks.py --results benchmarks/results --controls-results benchmarks/reference_results --output benchmarks/results/figures
 ```
 
-The output is `FigRob.{pdf,png,svg}` and `SFigRob_spearman.{pdf,png,svg}` in
+The output includes `FigMain`, `SFigMain_spearman`, `FigRob` and
+`SFigRob_spearman` as PDF, PNG and SVG files in
 `benchmarks/results/figures/`, using the paper's panel layout, axis ranges,
-category order, colors and error bars. The panels show:
+category order, colors and error bars. `FigMain` compares 15 model conditions
+across HEK293T, HeLa, HepG2 and muscle tissue; its mean/SD and paired-test tables
+are written to `benchmarks/results/main_comparison/`.
+
+The `FigRob` panels show:
 
 - **(a)** mRNA-only versus mRNA+T5u at c90/c70/c50.
 - **(b)** The fraction of native T5u gain recovered by length, composition,
@@ -69,7 +76,7 @@ category order, colors and error bars. The panels show:
 - **(c)** Paired performance gains in the six functional holdouts.
 
 The control panel uses included aggregate TSVs; it requires no embeddings or
-checkpoints. This recreates the paper's robustness figures, not every figure in
+checkpoints. This recreates the model-comparison and robustness figures, not every figure in
 the paper, and does not retrain models. See the [figure guide](benchmarks/FIGURES.md)
 for input provenance, export options and font requirements.
 

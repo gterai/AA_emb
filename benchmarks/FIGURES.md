@@ -1,4 +1,43 @@
-# Recreate the robustness figures
+# Recreate paper figures
+
+## Model comparison: FigMain
+
+```bash
+python benchmarks/scripts/plot_main_comparison.py
+```
+
+This creates `FigMain.{pdf,png,svg}` and `SFigMain_spearman.{pdf,png,svg}` in
+`benchmarks/results/figures/`. For only the requested main PDF:
+
+```bash
+python benchmarks/scripts/plot_main_comparison.py --metric pearson --formats pdf
+```
+
+Inputs are the 150 per-tissue metric tables in
+`benchmarks/reference_metrics/main_comparison/{condition}/seed_{0..9}/metrics.tsv`.
+These are the results of the primary model-comparison experiment, not the
+c50/c70/c90 experiments. The four panels show HEK293T, HeLa, HepG2 and muscle
+tissue. Fifteen conditions include mRNA-only, six protein-only models, six
+mRNA-plus-protein models, and amino acid/dipeptide composition controls.
+
+The source figure's 2-by-2 layout, model order, colors and common 0.30-0.85 axis
+range are preserved. Bars and error bars are the mean and sample SD across ten
+seeds. Brackets compare mRNA+Ankh against mRNA+Ankh3 and mRNA+ESM-2 against
+mRNA+ESM-2L using paired t-tests. The stars use **unadjusted** p-values:
+`* < 0.05`, `** < 0.01`, `*** < 0.001`, otherwise `n.s.`.
+
+The script also writes `FigMain_{pearson,spearman}_summary.tsv` and
+`FigMain_{pearson,spearman}_paired_ttests.tsv` to `benchmarks/results/main_comparison/`.
+Expected tables are in `benchmarks/reference_results/main_comparison/`.
+Use `--metrics`, `--results`, and `--output` to override these locations.
+`--formats` supports `pdf png svg eps tif`; `--metric` supports `pearson`,
+`spearman`, or `both` (default).
+
+Only metric tables are distributed: no input arrays, embeddings or model weights.
+This addition recreates figures and statistics; the training runners continue
+to cover protein-cluster and functional-holdout benchmarks only.
+
+## Robustness: FigRob
 
 `plot_benchmarks.py` uses the plotting layout used to create the manuscript's
 `FigRob` (Pearson) and `SFigRob_spearman` figures. Figure numbers may differ

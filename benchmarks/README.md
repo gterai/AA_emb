@@ -101,6 +101,11 @@ ignored by Git.
 
 ## Summarize and plot results
 
+To recreate the primary model comparison figure (`FigMain`) from the included
+reference metrics, run `python benchmarks/scripts/plot_main_comparison.py`. See
+[FIGURES.md](FIGURES.md) for its inputs, outputs and statistical annotations.
+
+
 After the complete runs finish:
 
 ```bash

@@ -26,7 +26,7 @@ when embedding generation uses a different dtype or execution environment.
 
 The supplied benchmark data and workflow have been checked as follows:
 
-- All 210 reference runs match the supplied split membership and within-subset
+- All 210 protein-cluster/functional-holdout reference runs match the supplied split membership and within-subset
   ID order.
 - All 60 functional partitions regenerate byte-for-byte from the included metadata.
 - Reaggregating the 210 per-tissue metric files reproduces the eight reference
@@ -45,3 +45,13 @@ SciPy 1.17.1, PyTorch 2.12.1 and Matplotlib 3.10.8 on macOS. The reference
 training runs used an NVIDIA B200 environment. Smoke tests do not substitute
 for complete training: the 210 full GPU jobs and embedding generation pipeline
 were not rerun for these workflow checks.
+
+## Primary model comparison figure
+
+The 150 per-tissue reference metric tables used for `FigMain` are included in
+`reference_metrics/main_comparison/`. `plot_main_comparison.py` checks their
+tissue coverage and selected figure values before writing outputs. In the
+verification environment, both FigMain/SFigMain_spearman PNG exports match the
+original PNGs pixel-for-pixel, and the rendered FigMain PDF matches the original
+at 120 dpi. All four generated summary/paired-test tables match the reference
+values at relative tolerance 1e-9 / absolute tolerance 1e-12.
