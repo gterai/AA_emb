@@ -106,18 +106,27 @@ After the complete runs finish:
 ```bash
 python benchmarks/scripts/summarize_protein_cluster_baseline_t5u.py benchmarks/runs/protein_cluster_baseline benchmarks/results/protein_cluster_baseline
 python benchmarks/scripts/summarize_go_slim_holdout.py benchmarks/runs/go_slim_holdout benchmarks/results/go_slim_holdout
-python benchmarks/scripts/plot_benchmarks.py --results benchmarks/results --output benchmarks/results/figures
+python benchmarks/scripts/plot_benchmark_overview.py --results benchmarks/results --output benchmarks/results/figures
 ```
 
-To recreate the reference statistics without training, use `benchmarks/reference_metrics`
-in place of `benchmarks/runs` in the first two commands. The expected summary
-tables are in `benchmarks/reference_results`.
+These commands plot an overview of your own two benchmark runs, including
+T5u-only. To recreate the paper's **three-panel robustness figures**, use the
+reference-data workflow in the [main README](../README.md#recreate-tables-and-figures-from-reference-results-no-gpu-required), or draw directly from the supplied summaries:
 
-The plotter requires all ten seeds and both benchmark summaries. It creates
-`benchmarks_pearson.png/.pdf` and `benchmarks_spearman.png/.pdf`. Dots show run-wise
-means across tissues; error bars show the mean and sample standard deviation
-across ten runs. Recreating statistics from supplied metrics does not regenerate
-model predictions.
+```bash
+python benchmarks/scripts/plot_benchmarks.py --output benchmarks/results/figures
+```
+
+This creates `FigRob` (Pearson) and `SFigRob_spearman`, with panels for protein
+similarity, c50 controls and functional holdouts. The included control-summary
+TSVs support figure recreation only; the benchmark training runner does not
+rerun random/shuffled encoder or other control experiments.
+
+The optional `plot_benchmark_overview.py` requires both benchmark summaries and
+all ten seeds. It creates `benchmarks_pearson.png/.pdf` and
+`benchmarks_spearman.png/.pdf`, which are overview figures, not the paper layout.
+Recreating statistics from supplied metrics does not regenerate predictions.
+See [FIGURES.md](FIGURES.md) for the paper figure inputs and panel definitions.
 
 ## Model and statistical settings
 

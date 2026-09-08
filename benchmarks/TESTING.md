@@ -31,7 +31,10 @@ The supplied benchmark data and workflow have been checked as follows:
 - All 60 functional partitions regenerate byte-for-byte from the included metadata.
 - Reaggregating the 210 per-tissue metric files reproduces the eight reference
   summary tables at relative tolerance 1e-9 / absolute tolerance 1e-12.
-- The plotting workflow produces PNG and PDF comparisons for Pearson and Spearman.
+- The manuscript figure workflow recreates `FigRob` and `SFigRob_spearman`.
+  In the verification environment, both 600-dpi PNGs match the original manuscript
+  PNGs pixel-for-pixel, including when benchmark summaries are reaggregated from
+  per-tissue metrics. See [FIGURES.md](FIGURES.md) for font and rendering details.
 - mRNA-only, mRNA + T5u and T5u-only each completed a one-epoch CPU smoke test on
   synthetic inputs with 78 finite tissue-level Pearson/Spearman metric pairs.
 - Reference feature checks confirmed identical transcript IDs, tissue order and

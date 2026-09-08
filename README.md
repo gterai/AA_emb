@@ -9,7 +9,7 @@ fixed benchmarks for protein sequence similarity and held-out biological functio
 
 | Goal | Start here |
 | --- | --- |
-| Recreate benchmark statistics and figures without training | [Quick example](#quick-example-no-gpu-required) |
+| Recreate benchmark statistics and figures without training | [Recreate paper figures](#recreate-tables-and-figures-from-reference-results-no-gpu-required) |
 | Generate embeddings and prepare model inputs | [Prepare the input](#prepare-the-input) |
 | Train and evaluate a model | [Train a model](#train-a-model) |
 | Compare models on c50/c70/c90 or functional holdouts | [Benchmark guide](benchmarks/README.md) |
@@ -45,22 +45,33 @@ on the chosen model, sequence lengths and batch size.
 For statistics and plotting only, install the lightweight dependencies below;
 PyTorch, pretrained models and the source dataset are not required.
 
-## Quick example (no GPU required)
+## Recreate tables and figures from reference results (no GPU required)
 
 Run these commands from the repository root to recreate summary tables and
-figures from the included per-tissue benchmark metrics:
+the paper's three-panel robustness figure (`FigRob`) and its Spearman counterpart
+(`SFigRob_spearman`) from the included reference metrics and control summaries:
 
 ```bash
 pip install -r benchmarks/requirements.txt
 python benchmarks/scripts/validate_benchmarks.py
 python benchmarks/scripts/summarize_protein_cluster_baseline_t5u.py benchmarks/reference_metrics/protein_cluster_baseline benchmarks/results/protein_cluster_baseline
 python benchmarks/scripts/summarize_go_slim_holdout.py benchmarks/reference_metrics/go_slim_holdout benchmarks/results/go_slim_holdout
-python benchmarks/scripts/plot_benchmarks.py --results benchmarks/results --output benchmarks/results/figures
+python benchmarks/scripts/plot_benchmarks.py --results benchmarks/results --controls-results benchmarks/reference_results --output benchmarks/results/figures
 ```
 
-The output includes Pearson and Spearman comparison figures as PNG/PDF files in
-`benchmarks/results/figures/`. This example reproduces statistics and plots from
-existing measurements; it does not retrain models or regenerate predictions.
+The output is `FigRob.{pdf,png,svg}` and `SFigRob_spearman.{pdf,png,svg}` in
+`benchmarks/results/figures/`, using the paper's panel layout, axis ranges,
+category order, colors and error bars. The panels show:
+
+- **(a)** mRNA-only versus mRNA+T5u at c90/c70/c50.
+- **(b)** The fraction of native T5u gain recovered by length, composition,
+  random-encoder and shuffled-sequence controls at c50.
+- **(c)** Paired performance gains in the six functional holdouts.
+
+The control panel uses included aggregate TSVs; it requires no embeddings or
+checkpoints. This recreates the paper's robustness figures, not every figure in
+the paper, and does not retrain models. See the [figure guide](benchmarks/FIGURES.md)
+for input provenance, export options and font requirements.
 
 ## Prepare the input
 
