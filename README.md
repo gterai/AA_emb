@@ -9,7 +9,7 @@ fixed benchmarks for protein sequence similarity and held-out biological functio
 
 | Goal | Start here |
 | --- | --- |
-| Recreate benchmark statistics and figures without training | [Recreate paper figures](#recreate-tables-and-figures-from-reference-results-no-gpu-required) |
+| Recreate benchmark statistics and figures without training | [Recreate paper figures](#recreate-figures-from-reference-results-no-gpu-required) |
 | Generate embeddings and prepare model inputs | [Prepare the input](#prepare-the-input) |
 | Train and evaluate a model | [Train a model](#train-a-model) |
 | Compare models on c50/c70/c90 or functional holdouts | [Benchmark guide](benchmarks/README.md) |
@@ -41,59 +41,6 @@ Use an appropriate PyTorch build for other platforms. The full embedding pipelin
 uses large protein language models; a GPU with at least 48 GB memory is recommended.
 CPU embedding generation and full training can be very slow. Requirements depend
 on the chosen model, sequence lengths and batch size.
-
-For statistics and plotting only, install the lightweight dependencies below;
-PyTorch, pretrained models and the source dataset are not required.
-
-## Recreate tables and figures from reference results (no GPU required)
-
-Run these commands from the repository root to recreate summary tables and
-the paper's model comparison (`FigMain`) and robustness (`FigRob`) figures,
-including their Spearman counterparts, from the included reference metrics and
-control summaries:
-
-```bash
-pip install -r benchmarks/requirements.txt
-python benchmarks/scripts/validate_benchmarks.py
-python benchmarks/scripts/plot_main_comparison.py
-python benchmarks/scripts/summarize_protein_cluster_baseline_t5u.py benchmarks/reference_metrics/protein_cluster_baseline benchmarks/results/protein_cluster_baseline
-python benchmarks/scripts/summarize_go_slim_holdout.py benchmarks/reference_metrics/go_slim_holdout benchmarks/results/go_slim_holdout
-python benchmarks/scripts/plot_benchmarks.py --results benchmarks/results --controls-results benchmarks/reference_results --output benchmarks/results/figures
-```
-
-The output includes `FigMain`, `SFigMain_spearman`, `FigRob` and
-`SFigRob_spearman` as PDF, PNG and SVG files in
-`benchmarks/results/figures/`, using the paper's panel layout, axis ranges,
-category order, colors and error bars. `FigMain` compares 15 model conditions
-across HEK293T, HeLa, HepG2 and muscle tissue; its mean/SD and paired-test tables
-are written to `benchmarks/results/main_comparison/`.
-
-The `FigRob` panels show:
-
-- **(a)** mRNA-only versus mRNA+T5u at c90/c70/c50.
-- **(b)** The fraction of native T5u gain recovered by length, composition,
-  random-encoder and shuffled-sequence controls at c50.
-- **(c)** Paired performance gains in the six functional holdouts.
-
-The control panel uses included aggregate TSVs; it requires no embeddings or
-checkpoints. This recreates the model-comparison and robustness figures, not every figure in
-the paper, and does not retrain models. See the [figure guide](benchmarks/FIGURES.md)
-for input provenance, export options and font requirements.
-
-### External validation figure: FigPTR (Table EV3 required)
-
-Download Table EV3 from [Eraslan et al. (2019)](https://doi.org/10.15252/msb.20188513)
-into `data/raw/eraslan2019/`, then run:
-
-```bash
-python benchmarks/scripts/plot_ptr_validation.py --table-ev3 data/raw/eraslan2019/44320_2019_BFMSB188513_MOESM5_ESM.zip
-```
-
-This recreates `FigPTR.pdf` and its PNG/SVG versions. It recalculates correlations
-and 5,000 cluster-bootstrap replicates per threshold from the user-supplied PTR
-measurements and included prediction medians. Table EV3 is not distributed and
-is excluded by `.gitignore`. See [the PTR guide](benchmarks/PTR.md) for the
-source download, extracted-TSV option, inputs and outputs.
 
 ## Prepare the input
 
@@ -163,6 +110,59 @@ conditions, run selection, statistical comparisons and output files.
 | `scripts/` | Embedding and input preparation entry points |
 | `benchmarks/` | Fixed partitions, reference metrics, benchmark runners and analysis |
 | `data/` | Locations for locally obtained source data and generated inputs |
+
+## Recreate figures from reference results (no GPU required)
+
+For statistics and plotting only, install the lightweight dependencies below;
+PyTorch, pretrained models and the source dataset are not required.
+
+Run these commands from the repository root to recreate
+the paper's model comparison (`FigMain`) and robustness (`FigRob`) figures,
+including their Spearman counterparts, from the included reference metrics and
+control summaries:
+
+```bash
+pip install -r benchmarks/requirements.txt
+python benchmarks/scripts/validate_benchmarks.py
+python benchmarks/scripts/plot_main_comparison.py
+python benchmarks/scripts/summarize_protein_cluster_baseline_t5u.py benchmarks/reference_metrics/protein_cluster_baseline benchmarks/results/protein_cluster_baseline
+python benchmarks/scripts/summarize_go_slim_holdout.py benchmarks/reference_metrics/go_slim_holdout benchmarks/results/go_slim_holdout
+python benchmarks/scripts/plot_benchmarks.py --results benchmarks/results --controls-results benchmarks/reference_results --output benchmarks/results/figures
+```
+
+The output includes `FigMain`, `SFigMain_spearman`, `FigRob` and
+`SFigRob_spearman` as PDF, PNG and SVG files in
+`benchmarks/results/figures/`, using the paper's panel layout, axis ranges,
+category order, colors and error bars. `FigMain` compares 15 model conditions
+across HEK293T, HeLa, HepG2 and muscle tissue; its mean/SD and paired-test tables
+are written to `benchmarks/results/main_comparison/`.
+
+The `FigRob` panels show:
+
+- **(a)** mRNA-only versus mRNA+T5u at c90/c70/c50.
+- **(b)** The fraction of native T5u gain recovered by length, composition,
+  random-encoder and shuffled-sequence controls at c50.
+- **(c)** Paired performance gains in the six functional holdouts.
+
+The control panel uses included aggregate TSVs; it requires no embeddings or
+checkpoints. This recreates the model-comparison and robustness figures, not every figure in
+the paper, and does not retrain models. See the [figure guide](benchmarks/FIGURES.md)
+for input provenance, export options and font requirements.
+
+### External validation figure: FigPTR (Table EV3 required)
+
+Download Table EV3 from [Eraslan et al. (2019)](https://doi.org/10.15252/msb.20188513)
+into `data/raw/eraslan2019/`, then run:
+
+```bash
+python benchmarks/scripts/plot_ptr_validation.py --table-ev3 data/raw/eraslan2019/44320_2019_BFMSB188513_MOESM5_ESM.zip
+```
+
+This recreates `FigPTR.pdf` and its PNG/SVG versions. It recalculates correlations
+and 5,000 cluster-bootstrap replicates per threshold from the user-supplied PTR
+measurements and included prediction medians. Table EV3 is not distributed and
+is excluded by `.gitignore`. See [the PTR guide](benchmarks/PTR.md) for the
+source download, extracted-TSV option, inputs and outputs.
 
 ## License and model usage
 
