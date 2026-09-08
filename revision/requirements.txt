@@ -1,0 +1,4 @@
+numpy
+scipy
+matplotlib>=3.6
+# Training additionally requires PyTorch (see the root README).

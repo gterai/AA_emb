@@ -5,3 +5,19 @@ data/intermediate/*.pkl.gz
 data/processed/*.pkl.gz
 class.txt*
 model_CNN.pth
+
+# Generated models, embeddings and local execution outputs are not distributed.
+*.pkl
+*.pkl.gz
+*.pickle
+*.pickle.gz
+*.pth
+*.pt
+*.safetensors
+__pycache__/
+*.pyc
+.DS_Store
+/revision/runs/
+/revision/results/
+# Explicitly include the published fixed partitions.
+!/revision/splits/**/class.txt

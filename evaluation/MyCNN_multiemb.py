@@ -1,7 +1,7 @@
 import sys
 import os
 
-sys.path.append(os.environ['HOME'] + "/pyscript")
+
 
 import torch
 import torch.nn as nn

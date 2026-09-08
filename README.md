@@ -1,5 +1,12 @@
 # AA_emb
 
+## Revision: protein-cluster and functional holdout evaluation
+
+See [revision/README.md](revision/README.md) to train on the published c50/c70/c90
+and leave-one-function-out splits using the existing `input.pkl.gz`. The revision
+includes fixed partitions, per-tissue reference metrics, aggregation and plotting
+code. Embeddings and model checkpoints are not distributed.
+
 A research-oriented Python toolkit for generating amino acid sequence embeddings
 and evaluating translation efficiency (TE) prediction models.
 
@@ -19,7 +26,7 @@ This package has been tested in a **Linux environment** running on an **Intel64 
 ## Installation Instructions
 To install package, please follow these steps:
 ```
-git clone https://github.com/gterai/AA_emb # Clone the repository
+git clone https://github.com/gterai/AA_emb_private AA_emb # Clone the private repository
 cd AA_emb                                  # Navigate to the RNAgg directory
 pip install -r requirements.txt            # Install the required dependencies
 ```
@@ -165,21 +172,18 @@ information from the mRNA features.
 
 
 ### Output data format
-The output of the 100eval.py script has the following format:
-```
-#best_val_epoch: 83
-#test: loss=0.4716647776952322 0.7221635 0.7198556410274023 mean_te_cor=0.8017266909432079
-#test_mean_te_cor: 0.8017266909432079
-TE_108T 0.70797384
-TE_12T 0.6256703
-TE_A2780 0.66556776
-TE_A549 0.729146
-TE_BJ 0.71980095
-...
-```
--	The first three lines (starting with #) are comments and can be ignored.
--	Each subsequent line consists of:
-	-	the name of a tissue or cell type, and
-	-	the corresponding prediction accuracy, reported as Pearson’s correlation coefficient between the predicted and observed translation efficiency.
 
-Each row therefore represents the prediction performance for one tissue or cell type.
+The evaluation script writes comment lines describing the selected epoch and
+aggregate test performance, followed by a three-column table:
+
+```text
+tissue	pearson	spearman
+TE_108T	...	...
+TE_12T	...	...
+```
+
+Use `--metrics_tsv path/to/metrics.tsv` for a standalone machine-readable table
+with `tissue`, `pearson`, `spearman`, and `n_test` (the tissue-specific number of
+observed test targets). `--input_class_fname` accepts a fixed split file and
+preserves the order within each subset. See [revision/README.md](revision/README.md)
+for the c50/c70/c90 and leave-one-function-out workflows.

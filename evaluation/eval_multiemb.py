@@ -10,8 +10,10 @@ import datetime
 import pickle
 import difflib
 import re
+import csv
+from pathlib import Path
 
-sys.path.append(os.environ['HOME'] + "/pyscript")
+
 import numpy as np
 
 import torch
@@ -29,9 +31,9 @@ test_loss_list = []
 
 
 def read_class_file(fname):
-    tra_set = set()
-    val_set = set()
-    tes_set = set()
+    tra_set = []
+    val_set = []
+    tes_set = []
 
     with open(fname) as f:
         for line in f:
@@ -39,11 +41,11 @@ def read_class_file(fname):
             sid, stype = line.split()
 
             if stype == "train":
-                tra_set.add(sid)
+                tra_set.append(sid)
             elif stype == "validation":
-                val_set.add(sid)
+                val_set.append(sid)
             elif stype == "test":
-                tes_set.add(sid)
+                tes_set.append(sid)
             else:
                 print("Unknown type (line)")
                 exit(1)
@@ -97,13 +99,22 @@ def make_class_file(d_tra, d_val, d_tes, fname):
             print(g, "test", file=fout)
 
 
+def print_per_tissue_metrics(tissues, pearson_values, spearman_values, file=sys.stdout):
+    """Write test-set correlations for each tissue as a labeled TSV block."""
+    print("tissue", "pearson", "spearman", sep="\t", file=file)
+    for tissue, pearson, spearman in zip(
+        tissues, pearson_values, spearman_values, strict=True
+    ):
+        print(tissue, pearson, spearman, sep="\t", file=file)
+
+
 def check_emb_dim(sid2ft: dict, emb_name: str):
     sid_list = list(sid2ft.keys())
     first_item = sid2ft[sid_list[0]]
 
     if emb_name not in first_item:
         emb_keys = sorted(key for key in first_item.keys() if key.startswith('emb_'))
-        suggestions = difflib.get_close_matches(emb_name, emb_keys, n=3)
+        suggestions = difflib.get_close_matches(emb_name, emb_keys, n=3) # 親切に似たemb名を出力してエラー終了してくれる
         print(f"Embedding key not found: {emb_name}", file=sys.stderr)
         if suggestions:
             print(f"Did you mean: {', '.join(suggestions)}", file=sys.stderr)
@@ -159,7 +170,8 @@ def limit_dataset_size(sid2ft: dict, max_data: int):
 
 
 def split_sid2ft_by_cluster(sid2ft, sid_to_cluster, split_sizes, seed):
-    missing_sids = [sid for sid in sid2ft if sid not in sid_to_cluster]
+    # split_sizes: [n_train, n_val, n_test]
+    missing_sids = [sid for sid in sid2ft if sid not in sid_to_cluster] # sid_to_clusterに存在しなければエラー終了
     if missing_sids:
         raise RuntimeError(
             f"{len(missing_sids)} IDs are missing from the CD-HIT cluster file. "
@@ -170,7 +182,8 @@ def split_sid2ft_by_cluster(sid2ft, sid_to_cluster, split_sizes, seed):
     for sid in sid2ft:
         cluster_id = sid_to_cluster[sid]
         cluster_to_sids.setdefault(cluster_id, []).append(sid)
-
+        #cluster_id というキーがまだ無ければ [] を入れる
+        #そのリストに sid を追加する
     cluster_ids = list(cluster_to_sids.keys())
     rng = random.Random(seed)
     rng.shuffle(cluster_ids)
@@ -179,13 +192,23 @@ def split_sid2ft_by_cluster(sid2ft, sid_to_cluster, split_sizes, seed):
     split_sid_lists = [[] for _ in target_sizes]
     split_counts = [0 for _ in target_sizes]
 
-    for cluster_id in cluster_ids:
+    for cluster_id in cluster_ids: # なるべく同じサイズになるようにする
         sids = cluster_to_sids[cluster_id]
         remaining = [target - count for target, count in zip(target_sizes, split_counts)]
         best_split_idx = max(
             range(len(target_sizes)),
             key=lambda idx: (remaining[idx], -split_counts[idx]),
         )
+        #ここが肝
+        #まず remaining[idx] が大きい split を優先
+        #つまり「まだ足りていない数が多い split」に入れる
+        #同点なら -split_counts[idx] が大きい方
+        #これは split_counts[idx] が小さい方を優先、という意味です
+        #つまり今の時点で小さい split に寄せる
+        #要するに、
+        #目標に対して一番不足している split
+        #同じなら現在サイズがより小さい split
+        #にクラスタを入れます。
         split_sid_lists[best_split_idx].extend(sids)
         split_counts[best_split_idx] += len(sids)
 
@@ -229,7 +252,7 @@ class Dataset:
     def __getitem__(self, index):
         return (
             self.data[index],
-            *[emb[index] for emb in self.embeddings],
+            *[emb[index] for emb in self.embeddings], # ここでマルチembeddingに対応している!
             self.target[index],
             self.y_mask[index],
             self.sid[index],
@@ -246,8 +269,8 @@ def split_dataset(dataset, seed, split_sizes):
 
 
 def load_model(num_embeddings):
-    if not 1 <= num_embeddings <= 3:
-        print("Only 1 to 3 embeddings are supported by the current model set.", file=sys.stderr)
+    if not 0 <= num_embeddings <= 3:
+        print("Only 0 to 3 embeddings are supported by the current model set.", file=sys.stderr)
         exit(1)
     return MyCNN_multiemb.CNN_GRU_multiemb
 
@@ -319,16 +342,17 @@ def forward_pass(dataloader, model, n_task, device, use_mse_loss, mode, *, optim
     g_cor = pearsonr(g_test_obs_flat, g_test_pred_flat)[0]
     g_rho = spearmanr(g_test_obs_flat, g_test_pred_flat)[0]
 
-    valid_counts = y_mask.sum(axis=0)
-    sample_obs_mean = (obs * y_mask).sum(axis=0) / valid_counts
-    sample_pred_mean = (pred * y_mask).sum(axis=0) / valid_counts
+    task_valid_counts = y_mask.sum(axis=1)
+    sample_valid_counts = y_mask.sum(axis=0)
+    sample_obs_mean = (obs * y_mask).sum(axis=0) / sample_valid_counts
+    sample_pred_mean = (pred * y_mask).sum(axis=0) / sample_valid_counts
     mean_te_cor = pearsonr(sample_obs_mean, sample_pred_mean)[0]
 
-    return loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor
+    return loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, task_valid_counts
 
 
 def train(dataloader, model, n_task, optimizer, device, use_mse_loss):
-    loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor = forward_pass(
+    loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, task_valid_counts = forward_pass(
         dataloader,
         model,
         n_task,
@@ -338,11 +362,11 @@ def train(dataloader, model, n_task, optimizer, device, use_mse_loss):
         optimizer=optimizer,
     )
     train_loss_list.append(loss_mean)
-    return loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor
+    return loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, task_valid_counts
 
 
 def val(dataloader, model, n_task, device, use_mse_loss):
-    loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor = forward_pass(
+    loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, task_valid_counts = forward_pass(
         dataloader,
         model,
         n_task,
@@ -351,7 +375,7 @@ def val(dataloader, model, n_task, device, use_mse_loss):
         "Val",
     )
     val_loss_list.append(loss_mean)
-    return loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor
+    return loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, task_valid_counts
 
 
 def save_model(best_model, cnn_settings, n_task, model_path):
@@ -364,8 +388,8 @@ def save_model(best_model, cnn_settings, n_task, model_path):
 
 
 def main(args):
-    if not 1 <= len(args.emb_name) <= 3:
-        print("--emb_name requires 1 to 3 values.", file=sys.stderr)
+    if not 0 <= len(args.emb_name) <= 3:
+        print("--emb_name accepts 0 to 3 values.", file=sys.stderr)
         exit(1)
 
     random.seed(args.seed)
@@ -378,6 +402,8 @@ def main(args):
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device = torch.device("mps" if torch.backends.mps.is_available() else device)
+    if args.device != "auto":
+        device = torch.device(args.device)
     print(f"device={device}", file=sys.stderr)
 
     with gzip.open(args.ft_gz, 'rb') as f:
@@ -400,7 +426,8 @@ def main(args):
     n_test = len(sid2ft) - n_train - n_val
     print(n_train, n_val, n_test, file=sys.stderr)
 
-    if args.input_class_fname:
+    # データのsplit方法は３つある
+    if args.input_class_fname: # (1)テキストで指定された時
         train_set, val_set, test_set = read_class_file(args.input_class_fname)
         sid2ft_train = {k: sid2ft[k] for k in train_set}
         sid2ft_val = {k: sid2ft[k] for k in val_set}
@@ -408,7 +435,7 @@ def main(args):
         d_train = Dataset(sid2ft_train, args.emb_name)
         d_val = Dataset(sid2ft_val, args.emb_name)
         d_test = Dataset(sid2ft_test, args.emb_name)
-    elif args.cd_hit_clstr:
+    elif args.cd_hit_clstr: # (2)クラスター単位⭐️
         sid_to_cluster = read_cd_hit_clstr(args.cd_hit_clstr)
         split_dicts, split_counts, n_clusters = split_sid2ft_by_cluster(
             sid2ft,
@@ -428,7 +455,7 @@ def main(args):
         d_train = Dataset(sid2ft_train, args.emb_name)
         d_val = Dataset(sid2ft_val, args.emb_name)
         d_test = Dataset(sid2ft_test, args.emb_name)
-    else:
+    else: # ランダム分割
         d = Dataset(sid2ft, args.emb_name)
         # この処理ではDatasetではなくSubsetができる
         d_train, d_val, d_test = split_dataset(d, args.seed, [n_train, n_val, n_test])
@@ -474,7 +501,7 @@ def main(args):
     for epoch in range(args.epoch):
         print(f"Epoch={epoch}", file=sys.stderr)
 
-        loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor = train(
+        loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, _ = train(
             train_dataloader, model, n_task, optimizer, device, args.mse_loss
         )
         print(
@@ -485,7 +512,7 @@ def main(args):
             file=sys.stderr,
         )
 
-        loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor = val(
+        loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, _ = val(
             val_dataloader, model, n_task, device, args.mse_loss
         )
         print(
@@ -507,7 +534,7 @@ def main(args):
     if best_model is None:
         best_model = copy.deepcopy(model)
 
-    loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor = forward_pass(
+    loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, task_valid_counts = forward_pass(
         test_dataloader, best_model, n_task, device, args.mse_loss, "Test"
     )
     print("#best_val_epoch:", best_val_epoch)
@@ -523,8 +550,27 @@ def main(args):
     )
     print(f"#test_mean_te_cor: {mean_te_cor}", file=sys.stderr)
 
-    for i, cor in enumerate(cor_list):
-        print(TE_cols[i], cor)
+    print_per_tissue_metrics(TE_cols, cor_list, rho_list)
+
+    if args.metrics_tsv:
+        metrics_path = Path(args.metrics_tsv)
+        metrics_path.parent.mkdir(parents=True, exist_ok=True)
+        with metrics_path.open('w', newline='') as handle:
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=['tissue', 'pearson', 'spearman', 'n_test'],
+                delimiter='\t',
+            )
+            writer.writeheader()
+            for tissue, cor, rho, count in zip(
+                TE_cols, cor_list, rho_list, task_valid_counts
+            ):
+                writer.writerow({
+                    'tissue': tissue,
+                    'pearson': cor,
+                    'spearman': rho,
+                    'n_test': int(count),
+                })
 
 
 if __name__ == '__main__':
@@ -537,7 +583,7 @@ if __name__ == '__main__':
     parser.add_argument('--in_dim', type=int, default=6, help='dimension of each vector in input vector sequence')
     parser.add_argument('--epoch', help='maximum epoch', default=100, type=int)
     parser.add_argument('--mse_loss', action='store_true', help='use MSE loss')
-    parser.add_argument('--mlp', action='store_true', help='use CNN-MLP model')
+    parser.add_argument('--mlp', action='store_true', help='legacy compatibility flag (unused)')
     parser.add_argument('--s_bat', type=int, default=100, help='batch size')
     parser.add_argument('--out_class_fname', help='classification file name', default="class.txt", type=str)
     parser.add_argument('--input_class_fname', help='classification file name', type=str)
@@ -545,10 +591,18 @@ if __name__ == '__main__':
     parser.add_argument('--model_fname', help='model file name', default="model_CNN.pth", type=str)
     parser.add_argument('--abl_type', help='abl_type', choices=['v', 'm', 'p'], type=str)
     parser.add_argument('--abl_dim', nargs='*', help='abl_dim', type=int)
-    parser.add_argument('--emb_name', nargs='+', required=True, type=str, help='one to three embedding names')
+    parser.add_argument(
+        '--emb_name',
+        nargs='*',
+        default=[],
+        type=str,
+        help='zero to three embedding names; omit values for the mRNA-only model',
+    )
     parser.add_argument('--max_data', type=int, help='limit the number of samples before splitting')
     parser.add_argument('--seed', default=42, help='random seed', type=int)
+    parser.add_argument('--metrics_tsv', help='write per-tissue test metrics as TSV', type=str)
 
+    parser.add_argument("--device", choices=["auto", "cpu", "cuda", "mps"], default="auto")
     args = parser.parse_args()
 
     main(args)
