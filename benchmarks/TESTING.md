@@ -3,6 +3,7 @@
 Run the lightweight workflow tests from the repository root:
 
 ```bash
+pip install -r benchmarks/requirements.txt
 python -m unittest discover -s benchmarks/tests -v
 python benchmarks/scripts/validate_benchmarks.py
 ```
@@ -55,3 +56,14 @@ verification environment, both FigMain/SFigMain_spearman PNG exports match the
 original PNGs pixel-for-pixel, and the rendered FigMain PDF matches the original
 at 120 dpi. All four generated summary/paired-test tables match the reference
 values at relative tolerance 1e-9 / absolute tolerance 1e-12.
+
+## External PTR validation
+
+The FigPTR workflow uses user-downloaded Table EV3 (ZIP or TSV) and compact
+reference prediction medians. Tests cover ZIP/TSV equivalence, retention of
+log10 values and missing values, duplicate ID rejection and the absence of
+source measurements in distributed prediction tables. The full 5,000-replicate
+cluster bootstrap and all three output tables were checked against the original
+analysis. In the verification environment, the FigPTR PNG matches the original
+pixel-for-pixel, as does the PDF rendered at 90 dpi. Source Table EV3 files are
+excluded by `.gitignore`.

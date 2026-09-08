@@ -469,5 +469,12 @@
   "reference_results/main_comparison/FigMain_spearman_summary.tsv": "a408428bdab8d96036c4ea8c9c9017a6fcdd4cdee019b317f0c7777e38358b65",
   "reference_results/main_comparison/FigMain_pearson_paired_ttests.tsv": "1f74a1e0aee1830f6129051311e4129a21dae21bd11e2535bec483743440ce07",
   "reference_results/main_comparison/FigMain_pearson_summary.tsv": "905ca545df5d4f69bb424a1f9f4a90b2217086a45e7a566b9b48496706df51e1",
-  "reference_results/main_comparison/FigMain_spearman_paired_ttests.tsv": "ab82bde126b84c5dc51c0c8ceb7d8ecf6d08800d9a43a79b34fedca529fbbdcc"
+  "reference_results/main_comparison/FigMain_spearman_paired_ttests.tsv": "ab82bde126b84c5dc51c0c8ceb7d8ecf6d08800d9a43a79b34fedca529fbbdcc",
+  "metadata/ptr_reference.json": "a06c55d134e20fb93a1aa98acf4ec696331d253e3130690beb89ee1f53bdc26d",
+  "reference_predictions/ptr_validation/c50.tsv": "9b02e0bb0355f0619893cc6f0fd9265abf6469aa7204f38e8c7878adb89a205c",
+  "reference_predictions/ptr_validation/c90.tsv": "01b37c0e824662b20df6e80d48a86245a0c325a4e0e35839cbffe9480da96fd0",
+  "reference_predictions/ptr_validation/c70.tsv": "99646e5c06d14db7d43361b62d5ec5ca128e9f1572770723240134b3322959e0",
+  "reference_results/ptr_validation/primary_cluster_bootstrap.tsv": "3c92d8013dfc9b3a1061c3afa2650a37756625382cb3ff89935104a148f19d6c",
+  "reference_results/ptr_validation/figure_tissue_differences.tsv": "952de3448c4184230e5b4b131a4b171be2d5cd65eba572c39e827bae94263edc",
+  "reference_results/ptr_validation/figure_primary_correlations.tsv": "26d80e5fbdb09a33d77dbfc5029201ef81033e8b2754d4fef39ba084ae49f95e"
 }

@@ -37,6 +37,17 @@ Only metric tables are distributed: no input arrays, embeddings or model weights
 This addition recreates figures and statistics; the training runners continue
 to cover protein-cluster and functional-holdout benchmarks only.
 
+## External validation: FigPTR
+
+```bash
+python benchmarks/scripts/plot_ptr_validation.py --table-ev3 data/raw/eraslan2019/44320_2019_BFMSB188513_MOESM5_ESM.zip
+```
+
+The user must download Table EV3 first. This command combines its observed PTR
+values with included reference prediction medians, recalculates the statistics
+and cluster-bootstrap confidence intervals, and draws the four-panel `FigPTR`.
+Source data are excluded from Git. See [PTR.md](PTR.md) for complete instructions.
+
 ## Robustness: FigRob
 
 `plot_benchmarks.py` uses the plotting layout used to create the manuscript's

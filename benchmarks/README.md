@@ -101,6 +101,11 @@ ignored by Git.
 
 ## Summarize and plot results
 
+For external validation against user-downloaded Table EV3, see [PTR.md](PTR.md).
+Its figure workflow uses reference prediction medians and does not require
+checkpoints or embedding generation.
+
+
 To recreate the primary model comparison figure (`FigMain`) from the included
 reference metrics, run `python benchmarks/scripts/plot_main_comparison.py`. See
 [FIGURES.md](FIGURES.md) for its inputs, outputs and statistical annotations.

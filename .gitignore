@@ -21,3 +21,13 @@ __pycache__/
 /benchmarks/results/
 # Explicitly include the published fixed partitions.
 !/benchmarks/splits/**/class.txt
+
+# Eraslan et al. Table EV3: users obtain these source files themselves.
+Table_EV3/
+Table_EV3.*
+Table EV3/
+Table EV3.*
+44320_2019_BFMSB188513_MOESM5_ESM.zip
+msb188513-sup-0005-TableEV3.zip
+*Table*EV3*
+/data/raw/eraslan2019/

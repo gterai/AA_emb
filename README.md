@@ -80,6 +80,21 @@ checkpoints. This recreates the model-comparison and robustness figures, not eve
 the paper, and does not retrain models. See the [figure guide](benchmarks/FIGURES.md)
 for input provenance, export options and font requirements.
 
+### External validation figure: FigPTR (Table EV3 required)
+
+Download Table EV3 from [Eraslan et al. (2019)](https://doi.org/10.15252/msb.20188513)
+into `data/raw/eraslan2019/`, then run:
+
+```bash
+python benchmarks/scripts/plot_ptr_validation.py --table-ev3 data/raw/eraslan2019/44320_2019_BFMSB188513_MOESM5_ESM.zip
+```
+
+This recreates `FigPTR.pdf` and its PNG/SVG versions. It recalculates correlations
+and 5,000 cluster-bootstrap replicates per threshold from the user-supplied PTR
+measurements and included prediction medians. Table EV3 is not distributed and
+is excluded by `.gitignore`. See [the PTR guide](benchmarks/PTR.md) for the
+source download, extracted-TSV option, inputs and outputs.
+
 ## Prepare the input
 
 1. Download Supplementary Table 1 from the [source study in Nature Biotechnology](https://www.nature.com/articles/s41587-025-02712-x#Sec21).
