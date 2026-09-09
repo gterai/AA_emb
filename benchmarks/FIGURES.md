@@ -81,6 +81,20 @@ Panel (a) does not include T5u-only, matching the manuscript. Panel (c) plots
 gains rather than separate absolute correlations. Both metrics use the same
 panel layout, fixed axis ranges and category order as the source figure code.
 
+The length-control reference results use training-only standardization for each
+threshold (c50/c70/c90) and seed (0–9):
+
+```text
+z = (log1p(protein_length_aa) - training_mean) / training_sample_sd
+```
+
+The mean and sample SD (`ddof=1`) are fitted on the training subset. The same
+parameters are applied to validation and test transcripts. The included
+`protein_cluster_controls/condition_summary.tsv` contains these rerun length
+results; its source is the author analysis `protein_cluster_controls_train_scaled`.
+The matched mRNA-only, native T5u and composition-control results are retained.
+Plotting uses these aggregate correlations directly; it does not fit a scaler.
+
 The three additional control files are author-generated aggregate results, not
 embeddings, trained models, sequences or raw measurements. Their checksums are
 included in `metadata/checksums.json`. They are used to redraw panel (b); no code

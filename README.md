@@ -141,7 +141,8 @@ The `FigRob` panels show:
 
 - **(a)** mRNA-only versus mRNA+T5u at c90/c70/c50.
 - **(b)** The fraction of native T5u gain recovered by length, composition,
-  random-encoder and shuffled-sequence controls at c50.
+  random-encoder and shuffled-sequence controls at c50. The length control uses
+  `log1p(length)` standardized with the training subset mean and sample SD.
 - **(c)** Paired performance gains in the six functional holdouts.
 
 The control panel uses included aggregate TSVs; it requires no embeddings or

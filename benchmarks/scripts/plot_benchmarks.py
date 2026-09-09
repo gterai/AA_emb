@@ -65,6 +65,7 @@ def panel_b(ax, metric):
 
 
 def panel_c(ax, metric):
+    # Reference length results use train-only log1p scaling for each split/seed.
     controls = read_tsv("protein_cluster_controls/condition_summary.tsv")
     random = read_tsv("random_t5u_control/condition_summary.tsv")
     shuffled = read_tsv("shuffled_t5u_control/condition_summary.tsv")
