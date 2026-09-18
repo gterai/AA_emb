@@ -94,7 +94,6 @@
   "partitions/protein_c90/seed_7/class.txt": "c92c334c81b550c5bfa58db85dbf34a680e1bdf9f9c0c8f7fd47ea149d3e994b",
   "partitions/protein_c90/seed_8/class.txt": "836709b183d44789e654535c5bdf340585e063baec5a40b0de41785b74a750a1",
   "partitions/protein_c90/seed_9/class.txt": "e5aa4020b1520c38d1a6676a68a5317378b88e1fbb35b72971223cc3991f4c07",
-  "benchmarks/splits/protein_cluster_splits/split_summary.tsv": "b053cc27a0d9a6f52aafc73a282601f2f2b810f2d76db63fe890f83f8685d335",
   "figure_data/figure4/metrics/go_slim_holdout/mrna_only/GO_0002376/seed_0/metrics.tsv": "97388c7925908bc5c854a0e0323516d5ddb7033cd5b2ac104511fd1dd624eca5",
   "figure_data/figure4/metrics/go_slim_holdout/mrna_only/GO_0002376/seed_1/metrics.tsv": "b91bbdf2df6ee4fef77ca1aae00b2940b87828da43fdbb32c178abc6784fcbb4",
   "figure_data/figure4/metrics/go_slim_holdout/mrna_only/GO_0002376/seed_2/metrics.tsv": "bbc54f5ed7e6d13549a1fb23adff8111fe65e94239c87b74d672ad1d6b2c3880",
@@ -489,5 +488,6 @@
   "partitions/mrna_c80/seed_0/class.txt": "4595958f634c990853243f57906583b71b711dd71776d88b319bd83b8a646096",
   "partitions/mrna_c80/seed_7/class.txt": "284b9eb5d3a19ed546dd5fd217f41998d380c36a2eb8501574e6e3ed127300b0",
   "figure_data/figure5/per_seed_summary.tsv": "f6ab81cc32547e2477f9530ea622e172b89e661d71e9c41455c4532c1d1212c8",
-  "figure_data/sources.json": "220708a2b7858276bc7837d9e5818d2ef48ceb47149528cf2e39e0fe7301be58"
+  "figure_data/sources.json": "220708a2b7858276bc7837d9e5818d2ef48ceb47149528cf2e39e0fe7301be58",
+  "partitions/protein_summary.tsv": "b053cc27a0d9a6f52aafc73a282601f2f2b810f2d76db63fe890f83f8685d335"
 }
