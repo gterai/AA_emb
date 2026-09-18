@@ -73,18 +73,6 @@ To match the primary reference runs, its mRNA-only condition uses
 The protein/function mRNA-only conditions omit `--emb_name`. Protein-only
 conditions use `--abl_type m`, which zeros the mRNA representation.
 
-## Recreate the paper figures
-
-To recreate Figure 4 from the paper's precomputed results, run:
-
-```bash
-python figures/plot_figure4.py
-```
-
-This creates the paper's three-panel figure without retraining. It uses the
-results in `figure_data/figure4/`, not your own training outputs.
-See [the figure guide](../figures/README.md) for Figures 3–6.
-
 These workflows cover the proposed models. External baseline training,
 random/shuffled-encoder controls, prediction generation for Figure 6, mouse
 transfer and the full supplementary analysis suite are outside this scope.
