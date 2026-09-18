@@ -3,6 +3,9 @@
 Run from the repository root after [creating the input](../prepare_input/README.md).
 `run_paper.py` calls `eval_multiemb.py` with the paper's fixed partitions and
 settings. It saves results in `training/runs/` and refuses to overwrite a run.
+Training progress and errors are displayed live in the terminal and also saved
+to `stdout.txt` and `stderr.txt` in each run directory. Input validation is shown
+before training; loading the full input file can take time.
 
 ## Quick training example
 

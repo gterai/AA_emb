@@ -7,6 +7,7 @@ from pathlib import Path
 import shlex
 import subprocess
 import sys
+import threading
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tests'))
 from check_data import validate_assets
 
@@ -28,6 +29,44 @@ for name, key in [('t5b','emb_T5b'), ('t5u','emb_T5u'), ('ank','emb_ank'),
     PRIMARY_ARGS['mrna_' + name] = ['--emb_name', key]
 PRIMARY_ARGS.update({'mrna_aacom': ['--emb_name', 'emb_aacom'],
                      'mrna_dipep': ['--emb_name', 'emb_dipep']})
+
+
+def run_with_live_logs(command, run, environment):
+    """Stream both child outputs to the terminal and their separate log files."""
+    environment = dict(environment, PYTHONUNBUFFERED='1')
+
+    def forward(source, saved, terminal):
+        for line in source:
+            saved.write(line)
+            saved.flush()
+            terminal.write(line)
+            terminal.flush()
+
+    with (run / 'stdout.txt').open('w') as stdout, (run / 'stderr.txt').open('w') as stderr:
+        with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              text=True, bufsize=1, env=environment) as process:
+            readers = [threading.Thread(target=forward, args=(source, saved, terminal))
+                       for source, saved, terminal in
+                       [(process.stdout, stdout, sys.stdout),
+                        (process.stderr, stderr, sys.stderr)]]
+            for reader in readers:
+                reader.start()
+            try:
+                returncode = process.wait()
+            finally:
+                if process.poll() is None:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait()
+                for reader in readers:
+                    reader.join()
+                process.stdout.close()
+                process.stderr.close()
+    if returncode:
+        raise subprocess.CalledProcessError(returncode, command)
 
 
 def main():
@@ -52,6 +91,7 @@ def main():
         p.error('Invalid or duplicate conditions for this analysis')
     if not set(a.seeds) <= set(range(10)) or len(a.seeds) != len(set(a.seeds)) or a.epochs < 1:
         p.error('Seeds must be distinct values in 0..9 and epochs must be positive')
+    print("Checking published partitions and data...", flush=True)
     validate_assets()
     name = {'primary': 'main_comparison', 'protein': 'protein_cluster_baseline', 'function': 'go_slim_holdout'}[a.analysis]
     output = (a.output or ROOT / 'training/runs' / name).resolve()
@@ -83,15 +123,24 @@ def main():
             print(shlex.join(command))
         return
     # Validate in a separate process so the large input is released before training.
-    subprocess.run([sys.executable, str(ROOT / 'tests/check_data.py'), '--input', str(a.input.resolve())], check=True)
+    print(f'Checking input: {a.input.resolve()} (loading the full file may take time)...', flush=True)
+    subprocess.run([sys.executable, '-u', str(ROOT / 'tests/check_data.py'), '--input', str(a.input.resolve())], check=True)
+    print('Input check complete.', flush=True)
     environment = dict(os.environ)
     environment.setdefault('CUBLAS_WORKSPACE_CONFIG', ':4096:8')
-    for run, command in commands:
+    for index, (run, command) in enumerate(commands, 1):
         run.mkdir(parents=True, exist_ok=False)
         (run / 'command.json').write_text(json.dumps(command, indent=2) + '\n')
-        print(f'Training: {run}', flush=True)
-        with (run / 'stdout.txt').open('w') as stdout, (run / 'stderr.txt').open('w') as stderr:
-            subprocess.run(command, stdout=stdout, stderr=stderr, env=environment, check=True)
+        print(f'[{index}/{len(commands)}] Starting training: {run}', flush=True)
+        print(f'Live logs are also saved to {run / "stdout.txt"} and {run / "stderr.txt"}', flush=True)
+        try:
+            run_with_live_logs(command, run, environment)
+        except subprocess.CalledProcessError as error:
+            print(f'Training failed (exit {error.returncode}). See {run / "stderr.txt"}',
+                  file=sys.stderr, flush=True)
+            raise
+        print(f'[{index}/{len(commands)}] Completed: {run / "metrics.tsv"}', flush=True)
+
 
 
 if __name__ == '__main__':
