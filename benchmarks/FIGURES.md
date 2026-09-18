@@ -1,5 +1,20 @@
 # Recreate paper figures
 
+## Figure and analysis map
+
+| Paper figure | Output | Reference-data recreation | Supported training |
+| --- | --- | --- | --- |
+| 1–2 | Encoding and model diagrams | Explanatory illustrations; no statistical data | Not applicable |
+| 3 | `FigMain` | 150 per-tissue metric files | `run_benchmarks.py primary`: 15 models × 10 mRNA c80 splits |
+| 4(a,c) | `FigRob` | Per-seed benchmark metrics | `run_benchmarks.py protein` and `function` |
+| 4(b) | `FigRob` | Control-summary TSVs | Reference recreation only |
+| 5 | `FigModel` | Five models × ten per-run tissue means | External baseline training is outside scope |
+| 6 | `FigPTR` | Reference OOF prediction medians + user-downloaded Table EV3 | OOF prediction generation is outside scope |
+
+Spearman counterparts are also provided where available. The complete
+supplementary analysis suite is not a supported end-to-end workflow.
+
+
 ## Model comparison: FigMain
 
 ```bash
@@ -15,16 +30,18 @@ python benchmarks/scripts/plot_main_comparison.py --metric pearson --formats pdf
 
 Inputs are the 150 per-tissue metric tables in
 `benchmarks/reference_metrics/main_comparison/{condition}/seed_{0..9}/metrics.tsv`.
-These are the results of the primary model-comparison experiment, not the
-c50/c70/c90 experiments. The four panels show HEK293T, HeLa, HepG2 and muscle
+These are the primary experiment results on ten fixed 80%-identity mRNA
+cluster partitions, not the protein c50/c70/c90 experiments. The four panels show HEK293T, HeLa, HepG2 and muscle
 tissue. Fifteen conditions include mRNA-only, six protein-only models, six
 mRNA-plus-protein models, and amino acid/dipeptide composition controls.
 
 The source figure's 2-by-2 layout, model order, colors and common 0.30-0.85 axis
 range are preserved. Bars and error bars are the mean and sample SD across ten
 seeds. Brackets compare mRNA+Ankh against mRNA+Ankh3 and mRNA+ESM-2 against
-mRNA+ESM-2L using paired t-tests. The stars use **unadjusted** p-values:
-`* < 0.05`, `** < 0.01`, `*** < 0.001`, otherwise `n.s.`.
+mRNA+ESM-2L using paired t-tests. The eight tests (two model pairs × four tissues) form one Holm-correction
+family, separately for Pearson and Spearman. Stars use **adjusted** p-values:
+`* < 0.05`, `** < 0.01`, `*** < 0.001`, otherwise `n.s.`. Both raw and
+adjusted p-values are exported, matching the manuscript.
 
 The script also writes `FigMain_{pearson,spearman}_summary.tsv` and
 `FigMain_{pearson,spearman}_paired_ttests.tsv` to `benchmarks/results/main_comparison/`.
@@ -34,8 +51,26 @@ Use `--metrics`, `--results`, and `--output` to override these locations.
 `spearman`, or `both` (default).
 
 Only metric tables are distributed: no input arrays, embeddings or model weights.
-This addition recreates figures and statistics; the training runners continue
-to cover protein-cluster and functional-holdout benchmarks only.
+The primary training runner uses the supplied mRNA c80 partitions; see
+[the benchmark guide](README.md#primary-model-comparison).
+
+## Recent-model comparison: FigModel (Figure 5)
+
+```bash
+python benchmarks/scripts/plot_recent_models.py
+```
+
+Creates `FigModel` and `SFigModel_spearman` as PDF, PNG and SVG in
+`benchmarks/results/figures/`. Use `--input`, `--output-dir` and `--formats`
+to change inputs/exports; `--check-only` validates all 50 rows without plotting.
+The input is `reference_results/recent_models/per_seed_summary.tsv`, with
+model identity, seed, tissue count and mean Pearson/Spearman correlation across
+78 tissues. Points show the ten matched runs; diamonds and error bars are their
+mean and sample SD (`ddof=1`). This figure performs no significance tests.
+All five models used the same ten mRNA c80 partitions. The reference results
+come from the author's `model_comparison_c80` analysis; baseline training and
+fine-tuning are not executed by this plotter. RiboNN, mRNABERT and 5UTRBERT
+training settings are described in the paper's Supplementary Methods.
 
 ## External validation: FigPTR
 
@@ -98,7 +133,7 @@ Plotting uses these aggregate correlations directly; it does not fit a scaler.
 The three additional control files are author-generated aggregate results, not
 embeddings, trained models, sequences or raw measurements. Their checksums are
 included in `metadata/checksums.json`. They are used to redraw panel (b); no code
-for training those control experiments is added to the two benchmark runners.
+for training those control experiments is included in the supported runners.
 
 The main README also demonstrates reaggregating the per-tissue reference metrics
 for panels (a) and (c). That command explicitly selects the original control
@@ -113,7 +148,7 @@ Do not interpret a figure combining new benchmark runs and original reference
 controls as a fully retrained experiment. A fresh complete experiment is not
 expected to give bitwise-identical training results across environments.
 
-For an overview of only the two supported training workflows, use:
+For an overview of the protein and functional benchmarks, use:
 
 ```bash
 python benchmarks/scripts/plot_benchmark_overview.py --results benchmarks/results --output benchmarks/results/figures

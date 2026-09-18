@@ -24,7 +24,7 @@ class WorkflowTests(unittest.TestCase):
                 validation.read_split(path)
 
     def test_run_matrix_and_protein_only_ablation(self):
-        for analysis, count in [('protein', 90), ('function', 120)]:
+        for analysis, count in [('primary', 150), ('protein', 90), ('function', 120)]:
             with tempfile.TemporaryDirectory() as directory:
                 result = subprocess.run([sys.executable, str(ROOT/'scripts/run_benchmarks.py'),
                     analysis, '--dry-run', '--output', str(Path(directory)/'runs')],
@@ -34,6 +34,10 @@ class WorkflowTests(unittest.TestCase):
                 self.assertTrue(all("--model_fname ''" in line for line in commands))
                 if analysis == 'protein':
                     self.assertEqual(sum('--abl_type m' in line for line in commands), 30)
+                elif analysis == 'primary':
+                    self.assertEqual(sum('--abl_type m' in line for line in commands), 60)
+                    self.assertEqual(sum('--abl_type p' in line for line in commands), 10)
+                    self.assertTrue(all('splits/mrna_c80/' in line for line in commands))
                 else:
                     self.assertTrue(all('--abl_type m' not in line for line in commands))
 

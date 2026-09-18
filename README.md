@@ -5,6 +5,23 @@ AA_emb is a research toolkit for predicting translation efficiency (TE) across
 model embeddings. It supports mRNA-only, protein-only and combined models, with
 fixed benchmarks for protein sequence similarity and held-out biological functions.
 
+## Reproducibility scope
+
+This repository provides two complementary workflows:
+
+- **Recreate figures:** redraw the main result figures (Figures 3–6) from
+  reference evaluation outputs. Figure 6 additionally requires user-downloaded
+  Table EV3. Figures 1–2 are explanatory diagrams, not numerical analyses.
+- **Retrain the proposed models:** run the primary model comparison, protein
+  similarity benchmarks and functional holdouts through `evaluation/eval_multiemb.py`
+  using a locally prepared `input.pkl.gz` and the published fixed partitions.
+
+The repository does not provide an end-to-end rerun of every analysis in the
+paper. External-model training, random/shuffled-encoder controls, mouse transfer
+and the complete supplementary analysis suite are outside the supported training
+workflows. Their inclusion in reference figures does not imply training support.
+See [the figure and analysis map](benchmarks/FIGURES.md).
+
 ## Choose a workflow
 
 | Goal | Start here |
@@ -12,7 +29,7 @@ fixed benchmarks for protein sequence similarity and held-out biological functio
 | Recreate benchmark statistics and figures without training | [Recreate paper figures](#recreate-figures-from-reference-results-no-gpu-required) |
 | Generate embeddings and prepare model inputs | [Prepare the input](#prepare-the-input) |
 | Train and evaluate a model | [Train a model](#train-a-model) |
-| Compare models on c50/c70/c90 or functional holdouts | [Benchmark guide](benchmarks/README.md) |
+| Run primary, c50/c70/c90 or functional benchmarks | [Benchmark guide](benchmarks/README.md) |
 | Check data integrity and run workflow tests | [Testing guide](benchmarks/TESTING.md) |
 
 Pretrained weights, generated embeddings, trained checkpoints and raw source
@@ -93,6 +110,7 @@ To compare against the reference results, use the fixed benchmark workflows
 rather than the evaluator's default split:
 
 ```bash
+python benchmarks/scripts/run_benchmarks.py primary --device cuda
 python benchmarks/scripts/run_benchmarks.py protein --device cuda
 python benchmarks/scripts/run_benchmarks.py function --device cuda
 ```
@@ -117,7 +135,8 @@ For statistics and plotting only, install the lightweight dependencies below;
 PyTorch, pretrained models and the source dataset are not required.
 
 Run these commands from the repository root to recreate
-the paper's model comparison (`FigMain`) and robustness (`FigRob`) figures,
+the paper's primary comparison (`FigMain`, Figure 3), robustness (`FigRob`,
+Figure 4), and recent-model comparison (`FigModel`, Figure 5) figures,
 including their Spearman counterparts, from the included reference metrics and
 control summaries:
 
@@ -125,13 +144,14 @@ control summaries:
 pip install -r benchmarks/requirements.txt
 python benchmarks/scripts/validate_benchmarks.py
 python benchmarks/scripts/plot_main_comparison.py
+python benchmarks/scripts/plot_recent_models.py
 python benchmarks/scripts/summarize_protein_cluster_baseline_t5u.py benchmarks/reference_metrics/protein_cluster_baseline benchmarks/results/protein_cluster_baseline
 python benchmarks/scripts/summarize_go_slim_holdout.py benchmarks/reference_metrics/go_slim_holdout benchmarks/results/go_slim_holdout
 python benchmarks/scripts/plot_benchmarks.py --results benchmarks/results --controls-results benchmarks/reference_results --output benchmarks/results/figures
 ```
 
-The output includes `FigMain`, `SFigMain_spearman`, `FigRob` and
-`SFigRob_spearman` as PDF, PNG and SVG files in
+The output includes `FigMain`, `SFigMain_spearman`, `FigRob`,
+`SFigRob_spearman`, `FigModel` and `SFigModel_spearman` as PDF, PNG and SVG files in
 `benchmarks/results/figures/`, using the paper's panel layout, axis ranges,
 category order, colors and error bars. `FigMain` compares 15 model conditions
 across HEK293T, HeLa, HepG2 and muscle tissue; its mean/SD and paired-test tables
@@ -146,8 +166,8 @@ The `FigRob` panels show:
 - **(c)** Paired performance gains in the six functional holdouts.
 
 The control panel uses included aggregate TSVs; it requires no embeddings or
-checkpoints. This recreates the model-comparison and robustness figures, not every figure in
-the paper, and does not retrain models. See the [figure guide](benchmarks/FIGURES.md)
+checkpoints. These commands redraw Figures 3–5 from reference results without retraining.
+The command below recreates Figure 6 after Table EV3 is downloaded. See the [figure guide](benchmarks/FIGURES.md)
 for input provenance, export options and font requirements.
 
 ### External validation figure: FigPTR (Table EV3 required)

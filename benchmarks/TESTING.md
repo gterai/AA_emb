@@ -9,7 +9,7 @@ python benchmarks/scripts/validate_benchmarks.py
 ```
 
 These checks require no GPU or pretrained model. They cover data checksums,
-cohort membership, all 90 fixed partitions, cluster/function leakage, duplicate
+cohort membership, all 100 fixed partitions, cluster/function leakage, duplicate
 ID rejection, run matrix construction, T5u-only ablation arguments and refusal
 to overwrite existing run directories.
 
@@ -32,13 +32,10 @@ The supplied benchmark data and workflow have been checked as follows:
 - All 60 functional partitions regenerate byte-for-byte from the included metadata.
 - Reaggregating the 210 per-tissue metric files reproduces the eight reference
   summary tables at relative tolerance 1e-9 / absolute tolerance 1e-12.
-- The manuscript figure workflow recreates `FigRob` and `SFigRob_spearman`.
-  Updated length-control summaries use training-only log1p standardization at
-  c50/c70/c90. Both 600-dpi PNGs match the updated source plotting workflow
-  pixel-for-pixel after aligning its two labels with the repository wording
-  ("Maximum within-cluster protein identity" and "Immune system process").
-  The existing repository wording is preserved. See [FIGURES.md](FIGURES.md)
-  for font and rendering details.
+- Figures 3–5 and their Spearman counterparts are checked against the current
+  author figure exports. Figure 3 uses the mRNA c80 results and Holm correction
+  across eight comparisons per metric. Figure 4 uses training-scaled length
+  controls and the manuscript labels. Figure 5 uses matched c80 run summaries.
 - mRNA-only, mRNA + T5u and T5u-only each completed a one-epoch CPU smoke test on
   synthetic inputs with 78 finite tissue-level Pearson/Spearman metric pairs.
 - Reference feature checks confirmed identical transcript IDs, tissue order and
@@ -52,12 +49,12 @@ were not rerun for these workflow checks.
 
 ## Primary model comparison figure
 
-The 150 per-tissue reference metric tables used for `FigMain` are included in
+The 150 current mRNA c80 per-tissue reference metric tables used for `FigMain` are included in
 `reference_metrics/main_comparison/`. `plot_main_comparison.py` checks their
 tissue coverage and selected figure values before writing outputs. In the
 verification environment, both FigMain/SFigMain_spearman PNG exports match the
-original PNGs pixel-for-pixel, and the rendered FigMain PDF matches the original
-at 120 dpi. All four generated summary/paired-test tables match the reference
+current manuscript PNGs pixel-for-pixel. All four generated summary/paired-test
+tables, including Holm-adjusted p-values, match the reference
 values at relative tolerance 1e-9 / absolute tolerance 1e-12.
 
 ## External PTR validation
@@ -70,3 +67,13 @@ cluster bootstrap and all three output tables were checked against the original
 analysis. In the verification environment, the FigPTR PNG matches the original
 pixel-for-pixel, as does the PDF rendered at 90 dpi. Source Table EV3 files are
 excluded by `.gitignore`.
+
+## Scope checks for the current manuscript
+
+All 150 primary run partitions match the distributed mRNA c80 files, including
+within-subset order. Tests cover the primary 150-command run matrix, its protein
+branch ablation for mRNA-only, Holm step-down correction, and rejection of
+missing/duplicate recent-model seeds. Figures 3, 4 and 5 match the current author
+PNG exports pixel-for-pixel. Figure 5's Spearman counterpart is generated from
+the same 50 validated rows; exact equality with its older export is not claimed.
+Primary full GPU training was not repeated during these packaging checks.

@@ -57,7 +57,7 @@ def panel_b(ax, metric):
     ax.set_title("Protein-similarity-aware evaluation", loc="left", fontsize=10.5, fontweight="bold")
     ax.text(-0.13, 1.06, "(a)", transform=ax.transAxes, fontsize=11, fontweight="bold")
     ax.set_xticks(range(3), labels)
-    ax.set_xlabel("Maximum within-cluster protein identity")
+    ax.set_xlabel("Protein sequence identity threshold")
     ax.set_ylabel(f"Mean {metric.capitalize()} correlation")
     ax.set_ylim(0.63, 0.74)
     ax.legend(frameon=False, fontsize=7.5, loc="lower right")
@@ -117,7 +117,7 @@ def panel_d(ax, metric):
     ax.errorbar(summary["mean"], y, xerr=summary["std"], fmt="o", color=ORANGE,
                 ecolor=ORANGE, capsize=2.5, ms=5.5, lw=1.2)
     ax.axvline(0, color=GREY, lw=0.8)
-    display = {"RNA binding": "RNA binding"}
+    display = {"RNA binding": "RNA binding", "immune system process": "Immune-related"}
     ax.set_yticks(y, [display.get(s, s.capitalize()) for s in order], fontsize=7.2)
     ax.set_xlabel(f"{metric.capitalize()} gain: mRNA+T5u $-$ mRNA-only")
     ax.set_title("Generalization to held-out functional classes", loc="left", fontsize=10.5, fontweight="bold")

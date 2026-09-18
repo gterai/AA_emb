@@ -12,6 +12,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import ttest_rel
+from summarize_go_slim_holdout import holm_adjust
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -110,8 +111,10 @@ def make_figure(metric: str) -> None:
                 "mean_difference": values[(tissue, right)].mean() - values[(tissue, left)].mean(),
                 "p_raw": raw_p,
             })
-    for row in tests:
-        row["significance"] = significance(row["p_raw"])
+    # Two model pairs across four tissues form one family of eight tests.
+    for row, adjusted in zip(tests, holm_adjust([row["p_raw"] for row in tests])):
+        row["p_adj"] = adjusted
+        row["significance"] = significance(adjusted)
 
     summaries = []
     for tissue, tissue_label in TISSUES:
@@ -138,7 +141,7 @@ def make_figure(metric: str) -> None:
         RESULTS / f"FigMain_{metric}_paired_ttests.tsv",
         tests,
         ["tissue", "tissue_label", "metric", "condition_1", "condition_2",
-         "mean_1", "mean_2", "mean_difference", "p_raw", "significance"],
+         "mean_1", "mean_2", "mean_difference", "p_raw", "p_adj", "significance"],
     )
 
     fig, axes = plt.subplots(2, 2, figsize=(7.2, 5.35))

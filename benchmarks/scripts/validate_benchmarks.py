@@ -73,6 +73,17 @@ def validate_assets():
                     seen[membership[bases[sid]]].add(label)
                 require(all(len(v) == 1 for v in seen.values()), f'Cluster leakage: {path}')
                 count += 1
+    mrna = {r['transcript_id']: r['cluster_id'] for r in rows(ROOT / 'metadata/mrna_cluster_membership.tsv')}
+    require(set(mrna) == ids, 'mRNA cluster cohort mismatch')
+    for seed in range(10):
+        path = ROOT / 'splits/mrna_c80' / f'seed_{seed}' / 'class.txt'
+        labels = read_split(path)
+        require(set(labels) == ids, f'Incomplete mRNA partition: {path}')
+        seen = defaultdict(set)
+        for sid, label in labels.items():
+            seen[mrna[sid]].add(label)
+        require(all(len(v) == 1 for v in seen.values()), f'mRNA cluster leakage: {path}')
+        count += 1
     print(f'PASS: {len(ids)} cohort IDs; {count} fixed splits; no cluster/function leakage.')
     return ids
 

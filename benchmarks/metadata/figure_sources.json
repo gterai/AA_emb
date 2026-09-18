@@ -1,0 +1,34 @@
+{
+  "manuscript": {
+    "main_pdf_sha256": "58f189716511345f5e361520781079ae12d301173c93f3b797bca215e51b3f70",
+    "supplementary_pdf_sha256": "55b44e829b815893d7ca04dc31d1afa837dcebf68c71921fae58bcf6212403a8"
+  },
+  "figures": {
+    "3": {
+      "output": "FigMain",
+      "source_analysis": "mrna_c80_reanalysis",
+      "statistics": "Two-sided paired t-tests; Holm across eight comparisons per metric; sample SD across ten runs"
+    },
+    "4": {
+      "output": "FigRob",
+      "source_analysis": [
+        "protein_cluster_baseline",
+        "protein_cluster_controls_train_scaled",
+        "random_t5u_control",
+        "shuffled_t5u_control",
+        "go_slim_holdout"
+      ],
+      "statistics": "Tissue correlations averaged per run; sample SD; paired gains; train-only length scaling"
+    },
+    "5": {
+      "output": "FigModel",
+      "source_analysis": "model_comparison_c80",
+      "statistics": "Mean of 78 tissue correlations per run; mean and sample SD across ten runs; no significance tests"
+    },
+    "6": {
+      "output": "FigPTR",
+      "source_analysis": "eraslan2019_ptr_sensitivity",
+      "statistics": "Reference OOF prediction medians; 5000 cluster-bootstrap replicates; percentile 95% CI"
+    }
+  }
+}
