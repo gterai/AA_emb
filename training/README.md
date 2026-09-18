@@ -4,6 +4,29 @@ Run from the repository root after [creating the input](../prepare_input/README.
 `run_paper.py` calls `eval_multiemb.py` with the paper's fixed partitions and
 settings. It saves results in `training/runs/` and refuses to overwrite a run.
 
+## Quick training example
+
+This example checks that `eval_multiemb.py` runs by training and evaluating an
+mRNA+T5u model for **one epoch on 500 transcripts**. It requires an **NVIDIA GPU
+with CUDA support**, a CUDA-enabled PyTorch installation, and the prepared
+`data/processed/input.pkl.gz`. Run from the repository root:
+
+```bash
+mkdir -p outputs/training_example
+python training/eval_multiemb.py data/processed/input.pkl.gz \
+  --emb_name emb_T5u --device cuda \
+  --max_data 500 --epoch 1 --s_bat 8 --seed 0 \
+  --model_fname "" \
+  --out_class_fname outputs/training_example/class.txt \
+  --metrics_tsv outputs/training_example/metrics.tsv
+```
+
+The command prints training progress and writes the data split (`class.txt`) and
+per-tissue evaluation results (`metrics.tsv`) to `outputs/training_example/`.
+It does not save model weights. This small run checks operation; its results are
+not comparable to the paper's full experiments. The full input file is loaded
+before selecting 500 transcripts, so sufficient system RAM is still needed.
+
 ## Paper experiments
 
 | Command | Models and partitions | Runs |
