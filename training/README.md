@@ -77,4 +77,4 @@ These workflows cover the proposed models. External baseline training,
 random/shuffled-encoder controls, prediction generation for Figure 6, mouse
 transfer and the full supplementary analysis suite are outside this scope.
 Hardware/software differences can change training results; bitwise identical
-retraining is not promised. Earlier unused evaluator variants are in `no_use/`.
+retraining is not promised.
