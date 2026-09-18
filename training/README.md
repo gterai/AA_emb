@@ -73,18 +73,17 @@ To match the primary reference runs, its mRNA-only condition uses
 The protein/function mRNA-only conditions omit `--emb_name`. Protein-only
 conditions use `--abl_type m`, which zeros the mRNA representation.
 
-## Summarize your training results
+## Recreate the paper figures
+
+To recreate Figure 4 from the paper's precomputed results, run:
 
 ```bash
-python figures/plot_figure3.py --metrics training/runs/main_comparison
-python training/summarize_protein.py training/runs/protein_cluster_baseline outputs/protein_cluster_baseline
-python training/summarize_function.py training/runs/go_slim_holdout outputs/go_slim_holdout
-python training/plot_overview.py --results outputs --output outputs/figures
+python figures/plot_figure4.py
 ```
 
-The overview summarizes your protein and function experiments. It is not the
-paper's Figure 4 layout. To recreate paper figures directly from precomputed
-results, use [figures/](../figures/README.md).
+This creates the paper's three-panel figure without retraining. It uses the
+results in `figure_data/figure4/`, not your own training outputs.
+See [the figure guide](../figures/README.md) for Figures 3–6.
 
 These workflows cover the proposed models. External baseline training,
 random/shuffled-encoder controls, prediction generation for Figure 6, mouse
