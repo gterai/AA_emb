@@ -171,7 +171,7 @@ def main():
             parser.error(f"Missing figure input: {RESULTS / relative}")
     for directory in sorted(CONTROL_DIRS):
         if not (CONTROL_RESULTS / directory / "condition_summary.tsv").is_file():
-            parser.error(f"Missing control summary: {CONTROL_RESULTS / directory / 'condition_summary.tsv'}. Use --controls-results for a separate control-summary root, or training/plot_overview.py for a two-benchmark overview.")
+            parser.error(f"Missing control summary: {CONTROL_RESULTS / directory / 'condition_summary.tsv'}. Use --controls-results to specify the directory containing all control summaries.")
     MAIN_OUTDIR.mkdir(parents=True, exist_ok=True)
     SUPPLEMENTARY_OUTDIR.mkdir(parents=True, exist_ok=True)
     plt.rcParams.update({
