@@ -73,17 +73,6 @@ To match the primary reference runs, its mRNA-only condition uses
 The protein/function mRNA-only conditions omit `--emb_name`. Protein-only
 conditions use `--abl_type m`, which zeros the mRNA representation.
 
-## Use the evaluator directly
-
-For your own experiments, you can call the evaluator without the runner:
-
-```bash
-python training/eval_multiemb.py data/processed/input.pkl.gz --emb_name emb_T5u --input_class_fname partitions/mrna_c80/seed_0/class.txt --seed 0 --model_fname "" --out_class_fname class_used.txt --metrics_tsv metrics.tsv
-```
-
-`--model_fname ""` disables saving weights. With no explicit partition, the
-default split is not guaranteed to match the paper. See `--help` for all options.
-
 ## Summarize your training results
 
 ```bash
