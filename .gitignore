@@ -17,10 +17,10 @@ model_CNN.pth
 __pycache__/
 *.pyc
 .DS_Store
-/benchmarks/runs/
-/benchmarks/results/
+/training/runs/
+/outputs/
 # Explicitly include the published fixed partitions.
-!/benchmarks/splits/**/class.txt
+!/partitions/**/class.txt
 
 # Eraslan et al. Table EV3: users obtain these source files themselves.
 Table_EV3/
@@ -31,3 +31,6 @@ Table EV3.*
 msb188513-sup-0005-TableEV3.zip
 *Table*EV3*
 /data/raw/eraslan2019/
+
+# Editor backups
+*~
