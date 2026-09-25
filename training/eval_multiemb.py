@@ -11,9 +11,13 @@ import pickle
 import difflib
 import re
 import csv
+import hashlib
+import json
+import math
+import statistics
 from pathlib import Path
 
-
+sys.path.append(os.environ['HOME'] + "/pyscript")
 import numpy as np
 
 import torch
@@ -378,16 +382,91 @@ def val(dataloader, model, n_task, device, use_mse_loss):
     return loss_mean, cor_list, rho_list, g_cor, g_rho, mean_te_cor, task_valid_counts
 
 
-def save_model(best_model, cnn_settings, n_task, model_path):
+def standardize_protein_length(sid2ft, train_ids, val_ids, test_ids, audit_path):
+    """Replace the length control in memory; fit log1p mean/sample SD on train only.
+
+    Exact, versioned transcript IDs are required. No targets or existing length
+    embeddings are used. Validation completes before any feature is replaced.
+    """
+    groups = [list(train_ids), list(val_ids), list(test_ids)]
+    all_ids = [sid for group in groups for sid in group]
+    if any(not group for group in groups):
+        raise ValueError("Protein-length standardization requires three nonempty splits")
+    if len(all_ids) != len(set(all_ids)):
+        raise ValueError("Duplicate or overlapping transcript IDs in splits")
+    if not set(all_ids).issubset(sid2ft):
+        raise ValueError("Split IDs absent from input features")
+    if len(train_ids) < 2:
+        raise ValueError("At least two training transcripts are required")
+
+    lengths = {}
+    with open(audit_path, newline='') as handle:
+        for row in csv.DictReader(handle, delimiter='\t'):
+            if row['passes_final_cohort'] != 'True':
+                continue
+            sid = row['transcript_id_original']
+            if sid in lengths:
+                raise ValueError(f"Duplicate transcript in audit: {sid}")
+            length = int(row['protein_length'])
+            if length <= 0:
+                raise ValueError(f"Nonpositive protein length: {sid}")
+            lengths[sid] = length
+    missing = sorted(set(all_ids) - set(lengths))
+    if missing:
+        raise ValueError(f"Split IDs absent from retained audit cohort: {missing[:5]}")
+
+    train_order = sorted(train_ids)
+    train_values = [math.log1p(lengths[sid]) for sid in train_order]
+    mean = statistics.fmean(train_values)
+    sd = statistics.stdev(train_values)
+    if not math.isfinite(sd) or sd <= 0:
+        raise ValueError("Training log protein lengths have zero or invalid SD")
+    transformed = {
+        sid: np.asarray([(math.log1p(lengths[sid]) - mean) / sd], dtype=np.float32)
+        for sid in all_ids
+    }
+    metadata = {
+        'feature_name': 'emb_protein_length',
+        'fit_subset': 'train',
+        'source': 'raw protein_length from transcript audit; existing embedding ignored',
+        'formula': '(log1p(protein_length_aa) - training_mean) / training_sample_sd',
+        'log1p_length_mean': mean,
+        'log1p_length_sample_sd': sd,
+        'std_ddof': 1,
+        'n_train': len(train_ids), 'n_validation': len(val_ids), 'n_test': len(test_ids),
+        'training_ids_sha256': hashlib.sha256(
+            ('\n'.join(train_order) + '\n').encode()).hexdigest(),
+        'transcript_audit': str(Path(audit_path).resolve()),
+        'transcript_audit_sha256': hashlib.sha256(Path(audit_path).read_bytes()).hexdigest(),
+    }
+    for sid, value in transformed.items():
+        sid2ft[sid]['emb_protein_length'] = value
+    return metadata
+
+
+def save_model(best_model, cnn_settings, n_task, model_path, preprocessing=None):
     save_model_dict = {
         'model_state_dict': best_model.state_dict(),
         'cnn_settings': cnn_settings,
         'n_task': n_task,
     }
+    if preprocessing is not None:
+        save_model_dict['preprocessing'] = preprocessing
     torch.save(save_model_dict, model_path)
 
 
 def main(args):
+    length_audit = getattr(args, 'protein_length_audit', None)
+    if length_audit:
+        if args.emb_name != ['emb_protein_length'] or not args.input_class_fname:
+            raise ValueError('--protein-length-audit requires --emb_name emb_protein_length '
+                             'and --input_class_fname (fixed matched splits)')
+        if not args.model_fname:
+            raise ValueError('--protein-length-audit requires --model_fname to preserve the scaler')
+        for output in [args.model_fname, args.model_fname + '.preprocessing.json']:
+            if Path(output).exists():
+                raise FileExistsError(f'Use a new run directory; output already exists: {output}')
+    preprocessing = None
     if not 0 <= len(args.emb_name) <= 3:
         print("--emb_name accepts 0 to 3 values.", file=sys.stderr)
         exit(1)
@@ -402,8 +481,6 @@ def main(args):
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device = torch.device("mps" if torch.backends.mps.is_available() else device)
-    if args.device != "auto":
-        device = torch.device(args.device)
     print(f"device={device}", file=sys.stderr)
 
     with gzip.open(args.ft_gz, 'rb') as f:
@@ -429,6 +506,22 @@ def main(args):
     # データのsplit方法は３つある
     if args.input_class_fname: # (1)テキストで指定された時
         train_set, val_set, test_set = read_class_file(args.input_class_fname)
+        if length_audit:
+            scaler = standardize_protein_length(
+                sid2ft, train_set, val_set, test_set, length_audit)
+            scaler['seed'] = args.seed
+            scaler['class_file_sha256'] = hashlib.sha256(
+                Path(args.input_class_fname).read_bytes()).hexdigest()
+            preprocessing = {'protein_length': scaler}
+            model_path = Path(args.model_fname)
+            model_path.parent.mkdir(parents=True, exist_ok=True)
+            metadata_path = Path(str(model_path) + '.preprocessing.json')
+            with metadata_path.open('x') as handle:
+                json.dump(preprocessing, handle, indent=2, allow_nan=False)
+                handle.write('\n')
+            print('Protein length standardized using training set only: '
+                  f"n={scaler['n_train']} mean={scaler['log1p_length_mean']:.12g} "
+                  f"sample_sd={scaler['log1p_length_sample_sd']:.12g}", file=sys.stderr)
         sid2ft_train = {k: sid2ft[k] for k in train_set}
         sid2ft_val = {k: sid2ft[k] for k in val_set}
         sid2ft_test = {k: sid2ft[k] for k in test_set}
@@ -529,7 +622,7 @@ def main(args):
             best_val_epoch = epoch
             if args.model_fname:
                 print(f"New model is saved at epoch{epoch}", file=sys.stderr)
-                save_model(best_model, cnn_settings, n_task, args.model_fname)
+                save_model(best_model, cnn_settings, n_task, args.model_fname, preprocessing)
 
     if best_model is None:
         best_model = copy.deepcopy(model)
@@ -583,7 +676,7 @@ if __name__ == '__main__':
     parser.add_argument('--in_dim', type=int, default=6, help='dimension of each vector in input vector sequence')
     parser.add_argument('--epoch', help='maximum epoch', default=100, type=int)
     parser.add_argument('--mse_loss', action='store_true', help='use MSE loss')
-    parser.add_argument('--mlp', action='store_true', help='legacy compatibility flag (unused)')
+    #parser.add_argument('--mlp', action='store_true', help='use CNN-MLP model')
     parser.add_argument('--s_bat', type=int, default=100, help='batch size')
     parser.add_argument('--out_class_fname', help='classification file name', default="class.txt", type=str)
     parser.add_argument('--input_class_fname', help='classification file name', type=str)
@@ -601,8 +694,10 @@ if __name__ == '__main__':
     parser.add_argument('--max_data', type=int, help='limit the number of samples before splitting')
     parser.add_argument('--seed', default=42, help='random seed', type=int)
     parser.add_argument('--metrics_tsv', help='write per-tissue test metrics as TSV', type=str)
+    parser.add_argument('--protein-length-audit', type=str,
+                        help='read raw lengths from this transcript audit TSV; fit log1p '
+                             'standardization on training IDs only (length control with fixed splits)')
 
-    parser.add_argument("--device", choices=["auto", "cpu", "cuda", "mps"], default="auto")
     args = parser.parse_args()
 
     main(args)
