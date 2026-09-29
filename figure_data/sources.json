@@ -16,9 +16,11 @@
         "protein_cluster_controls_train_scaled",
         "random_t5u_control",
         "shuffled_t5u_control",
-        "go_slim_holdout"
+        "go_slim_holdout",
+        "motif_holdout_training"
       ],
-      "statistics": "Tissue correlations averaged per run; sample SD; paired gains; train-only length scaling"
+      "statistics": "Tissue correlations averaged per run; sample SD; paired gains; train-only length scaling; Pfam panel: mean and sample SD of ten matched within-run gains",
+      "main_pdf_sha256": "c5f56d15a51dd32a1fa25efc0cb19ae5cc6a77ce51cc9a594d8e439cbe31ef32"
     },
     "5": {
       "output": "FigModel",

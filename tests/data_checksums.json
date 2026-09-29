@@ -488,6 +488,7 @@
   "partitions/mrna_c80/seed_0/class.txt": "4595958f634c990853243f57906583b71b711dd71776d88b319bd83b8a646096",
   "partitions/mrna_c80/seed_7/class.txt": "284b9eb5d3a19ed546dd5fd217f41998d380c36a2eb8501574e6e3ed127300b0",
   "figure_data/figure5/per_seed_summary.tsv": "f6ab81cc32547e2477f9530ea622e172b89e661d71e9c41455c4532c1d1212c8",
-  "figure_data/sources.json": "220708a2b7858276bc7837d9e5818d2ef48ceb47149528cf2e39e0fe7301be58",
-  "partitions/protein_summary.tsv": "b053cc27a0d9a6f52aafc73a282601f2f2b810f2d76db63fe890f83f8685d335"
+  "figure_data/sources.json": "0e35a93846b3dd5e177eefd65e1923fd521c48525e167a07e1882f9bcaea501f",
+  "partitions/protein_summary.tsv": "b053cc27a0d9a6f52aafc73a282601f2f2b810f2d76db63fe890f83f8685d335",
+  "figure_data/figure4/motif_holdout_training/per_seed_final.tsv": "3f92c8af5b2877496e54cebd55ad56324ab7c6661a9bfc47a1cb306700486396"
 }

@@ -27,6 +27,16 @@ GREY = "#777777"
 LIGHT_GREY = "#D9D9D9"
 
 
+PFAM_ORDER = ["PF00018", "PF00069", "PF00076", "PF00096", "PF00400"]
+PFAM_LABELS = {
+    "PF00018": "SH3",
+    "PF00069": "Protein kinase",
+    "PF00076": "RRM",
+    "PF00096": "C2H2 zinc finger",
+    "PF00400": "WD40",
+}
+
+
 def read_tsv(relative):
     base = CONTROL_RESULTS if Path(relative).parts[0] in CONTROL_DIRS else RESULTS
     return pd.read_csv(base / relative, sep="\t")
@@ -126,15 +136,40 @@ def panel_d(ax, metric):
     ax.grid(axis="x", color=LIGHT_GREY, lw=0.6)
 
 
+def panel_pfam(ax, metric):
+    df = read_tsv("motif_holdout_training/per_seed_final.tsv")
+    df = df[df["metric"] == metric]
+    pivot = df.pivot_table(
+        index=["motif", "seed"],
+        columns="condition",
+        values="mean_correlation",
+    ).reset_index()
+    pivot["gain"] = pivot["mrna_t5u"] - pivot["mrna_only"]
+    summary = pivot.groupby("motif")["gain"].agg(["mean", "std"]).loc[PFAM_ORDER]
+    y = np.arange(len(PFAM_ORDER))[::-1]
+    ax.errorbar(summary["mean"], y, xerr=summary["std"], fmt="o", color=ORANGE,
+                ecolor=ORANGE, capsize=2.5, ms=5.5, lw=1.2)
+    ax.axvline(0, color=GREY, lw=0.8)
+    ax.set_yticks(y, [PFAM_LABELS[motif] for motif in PFAM_ORDER], fontsize=7.2)
+    ax.set_xlabel(f"{metric.capitalize()} gain: mRNA+T5u $-$ mRNA-only")
+    ax.set_title("Generalization to held-out Pfam motifs", loc="left",
+                 fontsize=10.5, fontweight="bold")
+    ax.text(-0.13, 1.06, "(d)", transform=ax.transAxes,
+            fontsize=11, fontweight="bold")
+    ax.set_xlim(0, 0.105)
+    ax.grid(axis="x", color=LIGHT_GREY, lw=0.6)
+
+
 def make_figure(metric):
     outdir = MAIN_OUTDIR if metric == "pearson" else SUPPLEMENTARY_OUTDIR
     outdir.mkdir(parents=True, exist_ok=True)
-    fig = plt.figure(figsize=(7.2, 5.25), constrained_layout=False)
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.0, 0.92], hspace=0.56, wspace=0.42,
-                          left=0.09, right=0.98, top=0.94, bottom=0.11)
+    fig = plt.figure(figsize=(7.2, 5.55), constrained_layout=False)
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.0, 0.92], hspace=0.58, wspace=0.55,
+                          left=0.10, right=0.98, top=0.94, bottom=0.10)
     panel_b(fig.add_subplot(gs[0, 0]), metric)
     panel_c(fig.add_subplot(gs[0, 1]), metric)
-    panel_d(fig.add_subplot(gs[1, :]), metric)
+    panel_d(fig.add_subplot(gs[1, 0]), metric)
+    panel_pfam(fig.add_subplot(gs[1, 1]), metric)
 
     for ax in fig.axes:
         ax.spines["top"].set_visible(False)
@@ -153,19 +188,22 @@ def make_figure(metric):
 
 def main():
     global RESULTS, CONTROL_RESULTS, MAIN_OUTDIR, SUPPLEMENTARY_OUTDIR, FORMATS
-    parser = argparse.ArgumentParser(description="Recreate the three-panel FigRob and SFigRob_spearman using the manuscript plotting layout.")
+    parser = argparse.ArgumentParser(description="Recreate the four-panel FigRob (Figure 4) using the manuscript plotting layout.")
     parser.add_argument("--results", type=Path, default=ROOT / "figure_data/figure4",
-                        help="Summary root for protein-cluster and functional holdout panels; defaults to reference results")
+                        help="Summary root for protein-cluster, functional and Pfam holdout panels; defaults to reference results")
     parser.add_argument("--controls-results", type=Path,
                         help="Summary root for the control panel; defaults to --results. Specify explicitly when using separate reference controls.")
     parser.add_argument("--output", type=Path, default=ROOT / "outputs/figures")
     parser.add_argument("--formats", nargs="+", choices=["pdf", "png", "svg", "eps", "tif"], default=["pdf", "png", "svg"])
+    parser.add_argument("--metric", choices=["pearson", "spearman", "both"], default="pearson",
+                        help="Default: Pearson for main Figure 4; optional Spearman counterpart")
     args = parser.parse_args()
     RESULTS = args.results
     CONTROL_RESULTS = args.controls_results or RESULTS
     MAIN_OUTDIR = SUPPLEMENTARY_OUTDIR = args.output
     FORMATS = args.formats
-    required = ["protein_cluster_baseline/per_seed_summary.tsv", "go_slim_holdout/per_seed_summary_final.tsv"]
+    required = ["protein_cluster_baseline/per_seed_summary.tsv", "go_slim_holdout/per_seed_summary_final.tsv",
+                "motif_holdout_training/per_seed_final.tsv"]
     for relative in required:
         if not (RESULTS / relative).is_file():
             parser.error(f"Missing figure input: {RESULTS / relative}")
@@ -183,8 +221,8 @@ def main():
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
     })
-    make_figure("pearson")
-    make_figure("spearman")
+    for metric in (["pearson", "spearman"] if args.metric == "both" else [args.metric]):
+        make_figure(metric)
 
 
 if __name__ == "__main__":
