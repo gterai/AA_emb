@@ -50,38 +50,6 @@ The primary experiment uses `partitions/mrna_c80/`. Protein benchmarks use
 `partitions/protein_c50/`, `protein_c70/`, `protein_c90/`; the function benchmark
 uses `partitions/function_holdout/`. See [partition details](../partitions/README.md).
 
-## Pfam experiments (Figure 4d)
-
-Run one motif and seed first (two models, using the same fixed partition):
-
-```bash
-python training/run_paper.py pfam --groups PF00018 --seeds 0 --device cuda
-```
-
-Use `--conditions mrna_t5u` for only the combined model, or add `--dry-run` to
-preview commands without training. To train all 100 runs, omit the group and seed selections:
-
-```bash
-python training/run_paper.py pfam --device cuda
-```
-
-| Group | Motif |
-| --- | --- |
-| `PF00018` | SH3 |
-| `PF00069` | Protein kinase |
-| `PF00076` | RRM |
-| `PF00096` | C2H2 zinc finger |
-| `PF00400` | WD40 |
-
-Existing files in `partitions/pfam_holdout/{group}/seed_{0..9}/class.txt` are
-used as-is. No Pfam annotation or new partition generation is needed. Prepare
-`input.pkl.gz` first and use a CUDA-capable NVIDIA GPU for the commands above.
-Results are saved to
-`training/runs/pfam_holdout/{condition}/{group}/seed_{seed}/`.
-The mRNA-only model omits `--emb_name`; mRNA+T5u uses `--emb_name emb_T5u`.
-Both use the settings below (100 epochs, batch size 100, Adam, learning rate
-1e-4). Logs are displayed live and saved to files, as for the other experiments.
-
 ## Options and outputs
 
 - `--input`: input file, default `data/processed/input.pkl.gz`.
