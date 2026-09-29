@@ -9,7 +9,7 @@ python tests/check_data.py
 python -m unittest discover -s tests -v
 ```
 
-Checks cover distributed data hashes, the 9,926-transcript cohort, all 100 fixed
+Checks cover distributed data hashes, the 9,926-transcript cohort, all 150 fixed
 partitions, cluster/function leakage, command construction for primary/protein/
 function experiments, Holm correction, and Figure 5/6 input validation.
 

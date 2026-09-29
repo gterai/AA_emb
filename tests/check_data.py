@@ -87,6 +87,25 @@ def validate_assets():
             seen[mrna[sid]].add(label)
         require(all(len(v) == 1 for v in seen.values()), f'mRNA cluster leakage: {path}')
         count += 1
+    for motif in ['PF00018', 'PF00069', 'PF00076', 'PF00096', 'PF00400']:
+        fixed_test = None
+        for seed in range(10):
+            path = ROOT / 'partitions/pfam_holdout' / motif / f'seed_{seed}' / 'class.txt'
+            labels = read_split(path)
+            require(set(labels) <= ids, f'Unknown Pfam partition IDs: {path}')
+            test = {sid for sid, label in labels.items() if label == 'test'}
+            if fixed_test is None:
+                fixed_test = test
+            require(test == fixed_test, f'Pfam test set changed across seeds: {path}')
+            membership = clusters['c50']
+            blocked = {membership[bases[sid]] for sid in test}
+            excluded = {sid for sid in ids - test if membership[bases[sid]] in blocked}
+            require(set(labels) == ids - excluded, f'Incorrect Pfam c50 exclusion: {path}')
+            seen = defaultdict(set)
+            for sid, label in labels.items():
+                seen[membership[bases[sid]]].add(label)
+            require(all(len(v) == 1 for v in seen.values()), f'Pfam cluster leakage: {path}')
+            count += 1
     print(f'PASS: {len(ids)} cohort IDs; {count} fixed splits; no cluster/function leakage.')
     return ids
 

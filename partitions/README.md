@@ -20,6 +20,7 @@ order as well as membership when comparing with reference runs.
 | `protein_c70/` | 70% protein sequence clustering |
 | `protein_c90/` | 90% protein sequence clustering |
 | `function_holdout/` | One GO functional category reserved for testing |
+| `pfam_holdout/` | One Pfam motif reserved for testing; Figure 4(d) |
 
 The cohort contains 9,926 transcripts. The mRNA partition has 9,872 clusters;
 protein c50/c70/c90 have 8,624/9,502/9,843 clusters. Complete clusters are assigned
@@ -48,3 +49,29 @@ partitions can be reconstructed with:
 ```bash
 python partitions/make_function_partitions.py partitions/metadata/cohort.tsv partitions/metadata/protein_cluster_membership.tsv partitions/metadata/gene_go_slim_membership.tsv outputs/function_partitions
 ```
+
+## Pfam motif partitions
+
+`pfam_holdout/` contains 50 fixed partitions (five motifs × seeds 0–9) used for
+Figure 4(d). Both mRNA-only and mRNA+T5u use the same file for a given motif and
+seed. For example: `pfam_holdout/PF00018/seed_0/class.txt`.
+
+| Directory | Motif |
+| --- | --- |
+| `PF00018/` | SH3 |
+| `PF00069/` | Protein kinase |
+| `PF00076/` | RRM |
+| `PF00096/` | C2H2 zinc finger |
+| `PF00400/` | WD40 |
+
+All motif-positive cohort members form the test set. Other members of their
+c50 protein clusters are excluded. Remaining clusters are assigned to training
+and validation (target 0.75/0.25). The test set stays fixed across seeds; training
+and validation assignments vary. Motif test sets may overlap.
+`split_summary.tsv` records the subset and exclusion counts for each partition.
+The files preserve the original transcript versions and row order.
+
+These are ready-to-use partition files; no Pfam scan is required. They can be
+passed to `training/eval_multiemb.py` with `--input_class_fname`. The
+`training/run_paper.py` runner still supports primary, protein and function
+experiments only. Figure recreation uses the precomputed results independently.
