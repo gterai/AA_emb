@@ -48,7 +48,7 @@ python training/run_paper.py primary --conditions mrna_t5u --seeds 0 --device cu
 
 The runner uses the paper's partition files in `partitions/`. Results are saved
 to `training/runs/`. See [training/README.md](training/README.md) for the complete
-model comparison, c50/c70/c90 benchmarks, and held-out function evaluation.
+model comparison, c50/c70/c90 benchmarks, and held-out function/Pfam evaluation.
 
 ## Recreate figures from reference results (no GPU required)
 

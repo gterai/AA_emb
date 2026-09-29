@@ -72,6 +72,6 @@ and validation assignments vary. Motif test sets may overlap.
 The files preserve the original transcript versions and row order.
 
 These are ready-to-use partition files; no Pfam scan is required. They can be
-passed to `training/eval_multiemb.py` with `--input_class_fname`. The
-`training/run_paper.py` runner still supports primary, protein and function
-experiments only. Figure recreation uses the precomputed results independently.
+passed to `training/eval_multiemb.py` with `--input_class_fname`. Run these experiments with `python training/run_paper.py pfam --device cuda`;
+see [the training guide](../training/README.md#pfam-experiments-figure-4d).
+Figure recreation uses the precomputed results independently.

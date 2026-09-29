@@ -37,6 +37,7 @@ before selecting 500 transcripts, so sufficient system RAM is still needed.
 | `python training/run_paper.py primary --device cuda` | Figure 3: 15 model conditions; ten mRNA c80 partitions | 150 |
 | `python training/run_paper.py protein --device cuda` | mRNA-only, mRNA+T5u and T5u-only; c50/c70/c90 | 90 |
 | `python training/run_paper.py function --device cuda` | mRNA-only and mRNA+T5u; six held-out functions | 120 |
+| `python training/run_paper.py pfam --device cuda` | mRNA-only and mRNA+T5u; five held-out Pfam motifs | 100 |
 
 Start with one run, or use `--dry-run` to see the commands without training:
 
@@ -49,11 +50,43 @@ The primary experiment uses `partitions/mrna_c80/`. Protein benchmarks use
 `partitions/protein_c50/`, `protein_c70/`, `protein_c90/`; the function benchmark
 uses `partitions/function_holdout/`. See [partition details](../partitions/README.md).
 
+## Pfam experiments (Figure 4d)
+
+Run one motif and seed first (two models, using the same fixed partition):
+
+```bash
+python training/run_paper.py pfam --groups PF00018 --seeds 0 --device cuda
+```
+
+Use `--conditions mrna_t5u` for only the combined model, or add `--dry-run` to
+preview commands without training. To train all 100 runs, omit the group and seed selections:
+
+```bash
+python training/run_paper.py pfam --device cuda
+```
+
+| Group | Motif |
+| --- | --- |
+| `PF00018` | SH3 |
+| `PF00069` | Protein kinase |
+| `PF00076` | RRM |
+| `PF00096` | C2H2 zinc finger |
+| `PF00400` | WD40 |
+
+Existing files in `partitions/pfam_holdout/{group}/seed_{0..9}/class.txt` are
+used as-is. No Pfam annotation or new partition generation is needed. Prepare
+`input.pkl.gz` first and use a CUDA-capable NVIDIA GPU for the commands above.
+Results are saved to
+`training/runs/pfam_holdout/{condition}/{group}/seed_{seed}/`.
+The mRNA-only model omits `--emb_name`; mRNA+T5u uses `--emb_name emb_T5u`.
+Both use the settings below (100 epochs, batch size 100, Adam, learning rate
+1e-4). Logs are displayed live and saved to files, as for the other experiments.
+
 ## Options and outputs
 
 - `--input`: input file, default `data/processed/input.pkl.gz`.
 - `--conditions`: selected model keys; use `--help` or `--dry-run` to list them.
-- `--groups`: `c80` for primary, `c50 c70 c90` for protein, or GO category IDs for function.
+- `--groups`: `c80` for primary, `c50 c70 c90` for protein, GO category IDs for function, or Pfam IDs for pfam.
 - `--seeds`: selected values from 0 to 9; default all ten.
 - `--device`: `cuda`, `cpu`, `mps` or `auto`; full CPU training is slow.
 - `--epochs`: default 100; shorter runs are only for development.
@@ -70,7 +103,7 @@ Training uses Adam (learning rate 1e-4), batch size 100, 100 epochs, masked MAE
 and selection by the lowest validation MAE. Protein embeddings remain fixed.
 To match the primary reference runs, its mRNA-only condition uses
 `--emb_name emb_T5u --abl_type p`, which zeros the projected protein branch.
-The protein/function mRNA-only conditions omit `--emb_name`. Protein-only
+The protein/function/Pfam mRNA-only conditions omit `--emb_name`. Protein-only
 conditions use `--abl_type m`, which zeros the mRNA representation.
 
 These workflows cover the proposed models. External baseline training,

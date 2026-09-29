@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the published primary, protein-cluster or leave-one-function-out experiments."""
+"""Run the published primary, protein-cluster, functional or Pfam holdout experiments."""
 import argparse
 import json
 import os
@@ -16,6 +16,7 @@ REPO = ROOT
 GROUPS = {
     'primary': ['c80'],
     'protein': ['c50', 'c70', 'c90'],
+    'pfam': ['PF00018', 'PF00069', 'PF00076', 'PF00096', 'PF00400'],
     'function': ['GO_0005840', 'GO_0005886', 'GO_0005576', 'GO_0005739', 'GO_0002376', 'GO_0003723'],
 }
 ARGS = {'mrna_only': [], 'mrna_t5u': ['--emb_name', 'emb_T5u'],
@@ -84,16 +85,16 @@ def main():
     a = p.parse_args()
     groups = a.groups or GROUPS[a.analysis]
     model_args = PRIMARY_ARGS if a.analysis == 'primary' else ARGS
-    conditions = a.conditions or (list(model_args) if a.analysis != 'function' else ['mrna_only', 'mrna_t5u'])
+    conditions = a.conditions or (list(model_args) if a.analysis not in ('function', 'pfam') else ['mrna_only', 'mrna_t5u'])
     if not set(groups) <= set(GROUPS[a.analysis]) or len(groups) != len(set(groups)):
         p.error('Invalid or duplicate groups')
-    if not set(conditions) <= set(model_args) or len(conditions) != len(set(conditions)) or (a.analysis == 'function' and 't5u_only' in conditions):
+    if not set(conditions) <= set(model_args) or len(conditions) != len(set(conditions)) or (a.analysis in ('function', 'pfam') and 't5u_only' in conditions):
         p.error('Invalid or duplicate conditions for this analysis')
     if not set(a.seeds) <= set(range(10)) or len(a.seeds) != len(set(a.seeds)) or a.epochs < 1:
         p.error('Seeds must be distinct values in 0..9 and epochs must be positive')
     print("Checking published partitions and data...", flush=True)
     validate_assets()
-    name = {'primary': 'main_comparison', 'protein': 'protein_cluster_baseline', 'function': 'go_slim_holdout'}[a.analysis]
+    name = {'primary': 'main_comparison', 'protein': 'protein_cluster_baseline', 'function': 'go_slim_holdout', 'pfam': 'pfam_holdout'}[a.analysis]
     output = (a.output or ROOT / 'training/runs' / name).resolve()
     commands = []
     for condition in conditions:
@@ -107,6 +108,8 @@ def main():
                     partition = ROOT / 'partitions/mrna_c80'
                 elif a.analysis == 'protein':
                     partition = ROOT / 'partitions' / f'protein_{group}'
+                elif a.analysis == 'pfam':
+                    partition = ROOT / 'partitions/pfam_holdout' / group
                 else:
                     partition = ROOT / 'partitions/function_holdout' / group
                 split = partition / f'seed_{seed}' / 'class.txt'
