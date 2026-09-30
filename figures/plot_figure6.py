@@ -28,7 +28,7 @@ def read_tsv(path: Path):
 
 
 def panel_label(ax, label: str):
-    ax.text(-0.08, 1.06, label, transform=ax.transAxes, fontsize=15,
+    ax.text(-0.08, 1.06, label, transform=ax.transAxes, fontsize=19,
             fontweight="bold", va="top", ha="right")
 
 
@@ -50,10 +50,10 @@ def main():
     (args.results_dir / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
 
     plt.rcParams.update({
-        "font.family": "DejaVu Sans", "font.size": 9,
-        "axes.titlesize": 10, "axes.labelsize": 9,
-        "xtick.labelsize": 8, "ytick.labelsize": 8,
-        "axes.linewidth": 0.8, "pdf.fonttype": 42, "ps.fonttype": 42,
+        "font.family": "DejaVu Sans", "font.size": 11.5,
+        "axes.titlesize": 13, "axes.labelsize": 12,
+        "xtick.labelsize": 10.5, "ytick.labelsize": 10.5,
+        "axes.linewidth": 1.0, "pdf.fonttype": 42, "ps.fonttype": 42,
     })
     fig = plt.figure(figsize=(14.2, 11.4), constrained_layout=False)
     outer = fig.add_gridspec(2, 2, width_ratios=[0.92, 1.35],
@@ -70,15 +70,15 @@ def main():
     ]
     for i, (x, y, text) in enumerate(boxes):
         ax.text(x, y, text, ha="center", va="center", transform=ax.transAxes,
-                fontsize=9.2, linespacing=1.35,
+                fontsize=11.2, linespacing=1.25,
                 bbox=dict(boxstyle="round,pad=0.48", fc="white", ec=GRAY, lw=1.0))
         if i < len(boxes) - 1:
             ax.annotate("", xy=(x, boxes[i + 1][1] + 0.075), xytext=(x, y - 0.075),
                         xycoords=ax.transAxes, arrowprops=dict(arrowstyle="-|>", color=GRAY, lw=1.1))
     ax.text(0.07, 0.02, "PTR: median log$_{10}$ PTR across tissues", transform=ax.transAxes,
-            fontsize=8.2, color=GRAY)
+            fontsize=10.2, color=GRAY)
     ax.text(0.07, -0.04, "Prediction: median TE across 78 output heads", transform=ax.transAxes,
-            fontsize=8.2, color=GRAY)
+            fontsize=10.2, color=GRAY)
 
     # B: transcript-level scatter plots, two subfacets
     inner = outer[0, 1].subgridspec(1, 2, wspace=0.23)
@@ -90,10 +90,10 @@ def main():
         (scatter_axes[0], pred0, "mRNA-only", BLUE),
         (scatter_axes[1], pred1, "mRNA+T5u", ORANGE),
     ]):
-        sax.scatter(ptr, pred, s=7, color=col, alpha=0.18,
+        sax.scatter(ptr, pred, s=6, color=col, alpha=0.28,
                     linewidth=0, rasterized=True)
         fit = np.polyfit(ptr, pred, 1); xx = np.linspace(ptr.min(), ptr.max(), 100)
-        sax.plot(xx, np.polyval(fit, xx), color=col, lw=1.5)
+        sax.plot(xx, np.polyval(fit, xx), color=col, lw=1.8)
         r = pearsonr(ptr, pred).statistic
         rho = spearmanr(ptr, pred).statistic
         sax.set_title(title, color=col, fontweight="bold")
@@ -101,7 +101,7 @@ def main():
         if j == 0: sax.set_ylabel("Median predicted TE")
         else: sax.set_yticklabels([])
         sax.text(0.04, 0.95, f"Pearson r = {r:.3f}\nSpearman ρ = {rho:.3f}\nn = 4,687",
-                 transform=sax.transAxes, va="top", ha="left", fontsize=8.3,
+                 transform=sax.transAxes, va="top", ha="left", fontsize=10.5,
                  bbox=dict(fc="white", ec="none", alpha=0.86, pad=2.5))
         sax.grid(color=LIGHT, lw=0.6, zorder=0)
         sax.set_xlim(ptr.min() - xpad, ptr.max() + xpad)
@@ -110,7 +110,8 @@ def main():
 
     # C: forest plot of Spearman differences
     ax = fig.add_subplot(outer[1, 0]); panel_label(ax, "(c)")
-    ax.set_title("T5u-associated improvement across split thresholds", loc="left", fontweight="bold")
+    ax.set_title("T5u-associated improvement\nacross split thresholds",
+                 loc="left", fontweight="bold", linespacing=1.05)
     order = ["c90", "c70", "c50"]
     by = {r["threshold"]: r for r in primary}
     for y, threshold in enumerate(order):
@@ -119,13 +120,13 @@ def main():
         ax.plot([lo, hi], [y, y], color=GRAY, lw=2.0, solid_capstyle="round")
         ax.scatter(est, y, s=58, color=GREEN, edgecolor="white", linewidth=0.8, zorder=3)
         ax.text(est, y - 0.18, f"{est:.3f} [{lo:.3f}, {hi:.3f}]",
-                va="top", ha="center", fontsize=8.3)
+                va="top", ha="center", fontsize=10.5)
     ax.axvline(0, color="black", lw=0.9, ls="--")
     ax.set_yticks(range(3), order); ax.set_ylim(-0.65, 2.65); ax.set_xlim(-0.004, 0.078)
     ax.set_xlabel("Δ Spearman ρ (mRNA+T5u − mRNA-only)")
     ax.grid(axis="x", color=LIGHT, lw=0.7)
     ax.text(0.02, 0.04, f"95% CI: {args.bootstrap:,} cluster-bootstrap replicates",
-            transform=ax.transAxes, fontsize=8.2, color=GRAY)
+            transform=ax.transAxes, fontsize=10.2, color=GRAY)
 
     # D: tissue-level differences for primary c50 analysis
     ax = fig.add_subplot(outer[1, 1]); panel_label(ax, "(d)")
