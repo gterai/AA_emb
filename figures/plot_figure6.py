@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--output-prefix", type=Path, default=ROOT / "outputs/figures/FigPTR")
     parser.add_argument("--bootstrap", type=int, default=5000)
     parser.add_argument("--seed", type=int, default=20260826)
-    parser.add_argument("--formats", nargs="+", choices=["pdf","png","svg","tif"], default=["pdf","png","svg"])
+    parser.add_argument("--formats", nargs="+", choices=["pdf", "png", "tif"], default=["pdf", "png", "tif"])
     args = parser.parse_args()
     data, tissue_names, metadata = load_inputs(args.table_ev3, args.predictions)
     primary, tissues = calculate(data, tissue_names, args.results_dir, args.bootstrap, args.seed)

@@ -20,7 +20,7 @@ RUNS = ROOT / "figure_data/figure3/metrics"
 RESULTS = ROOT / "outputs/figure3"
 MAIN = ROOT / "outputs/figures"
 SUPPLEMENTARY = MAIN
-FORMATS = ["pdf", "png", "svg"]
+FORMATS = ["pdf", "png", "tif"]
 
 TISSUES = [
     ("TE_HEK293T", "HEK293T"),
@@ -218,14 +218,14 @@ def validate_metrics():
 
 def main() -> None:
     global RUNS, RESULTS, MAIN, SUPPLEMENTARY, FORMATS
-    parser = argparse.ArgumentParser(description="Recreate FigMain and SFigMain_spearman from per-tissue reference metrics.")
+    parser = argparse.ArgumentParser(description="Recreate FigMain from per-tissue reference metrics (Pearson by default).")
     parser.add_argument("--metrics", type=Path, default=ROOT / "figure_data/figure3/metrics",
                         help="Root containing condition/seed_N/metrics.tsv files")
     parser.add_argument("--results", type=Path, default=ROOT / "outputs/figure3",
                         help="Directory for generated mean/SD and paired-test tables")
     parser.add_argument("--output", type=Path, default=ROOT / "outputs/figures")
-    parser.add_argument("--formats", nargs="+", choices=["pdf", "png", "svg", "eps", "tif"], default=["pdf", "png", "svg"])
-    parser.add_argument("--metric", choices=("pearson", "spearman", "both"), default="both")
+    parser.add_argument("--formats", nargs="+", choices=["pdf", "png", "tif"], default=["pdf", "png", "tif"])
+    parser.add_argument("--metric", choices=("pearson", "spearman", "both"), default="pearson")
     args = parser.parse_args()
     RUNS, RESULTS = args.metrics, args.results
     MAIN = SUPPLEMENTARY = args.output

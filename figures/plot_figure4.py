@@ -16,7 +16,7 @@ RESULTS = ROOT / "figure_data/figure4"
 CONTROL_RESULTS = RESULTS
 MAIN_OUTDIR = ROOT / "outputs/figures"
 SUPPLEMENTARY_OUTDIR = MAIN_OUTDIR
-FORMATS = ["pdf", "png", "svg"]
+FORMATS = ["pdf", "png", "tif"]
 CONTROL_DIRS = {"protein_cluster_controls", "random_t5u_control", "shuffled_t5u_control"}
 
 BLUE = "#0072B2"
@@ -194,7 +194,7 @@ def main():
     parser.add_argument("--controls-results", type=Path,
                         help="Summary root for the control panel; defaults to --results. Specify explicitly when using separate reference controls.")
     parser.add_argument("--output", type=Path, default=ROOT / "outputs/figures")
-    parser.add_argument("--formats", nargs="+", choices=["pdf", "png", "svg", "eps", "tif"], default=["pdf", "png", "svg"])
+    parser.add_argument("--formats", nargs="+", choices=["pdf", "png", "tif"], default=["pdf", "png", "tif"])
     parser.add_argument("--metric", choices=["pearson", "spearman", "both"], default="pearson",
                         help="Default: Pearson for main Figure 4; optional Spearman counterpart")
     args = parser.parse_args()

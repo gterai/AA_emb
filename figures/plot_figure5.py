@@ -33,12 +33,12 @@ MODELS = [
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Create separate Pearson and Spearman comparisons of five TE models."
+            "Create the main Pearson comparison of five TE models."
         )
     )
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
-    parser.add_argument("--formats", nargs="+", choices=["pdf", "png", "svg"], default=["pdf", "png", "svg"])
+    parser.add_argument("--formats", nargs="+", choices=["pdf", "png", "tif"], default=["pdf", "png", "tif"])
     parser.add_argument("--basename", default=DEFAULT_BASENAME)
     parser.add_argument(
         "--check-only",
@@ -193,13 +193,10 @@ def main() -> None:
     )
     limits = common_limits(values)
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    supplementary_dir = args.output_dir
-    supplementary_dir.mkdir(parents=True, exist_ok=True)
 
     outputs = (
         # Bioinformatics single-column figure (approximately 3.3 inches wide).
         ("pearson", args.output_dir / args.basename, (3.35, 3.55)),
-        ("spearman", supplementary_dir / "SFigModel_spearman", (4.6, 4.15)),
     )
     for metric, stem, size in outputs:
         fig, ax = plt.subplots(1, 1, figsize=size)
@@ -211,11 +208,12 @@ def main() -> None:
         else:
             fig.subplots_adjust(left=0.16, right=0.98, top=0.96, bottom=0.22)
         for suffix in args.formats:
-            fig.savefig(
-                stem.with_suffix(f".{suffix}"),
-                dpi=600 if suffix == "png" else None,
-                bbox_inches="tight",
-            )
+            kwargs = {"bbox_inches": "tight"}
+            if suffix == "png":
+                kwargs["dpi"] = 600
+            elif suffix == "tif":
+                kwargs.update(dpi=1200, pil_kwargs={"compression": "tiff_lzw"})
+            fig.savefig(stem.with_suffix(f".{suffix}"), **kwargs)
         plt.close(fig)
 
 

@@ -69,7 +69,7 @@ For Figure 6, first download Table EV3 as explained in
 python figures/plot_figure6.py --table-ev3 data/raw/eraslan2019/44320_2019_BFMSB188513_MOESM5_ESM.zip
 ```
 
-The figures are saved as PDF, PNG and SVG in `outputs/figures/`. The scripts use
+The figures are saved as PDF, PNG and TIFF (`.tif`) in `outputs/figures/`. The scripts use
 the statistical procedures described in the paper, including Holm correction
 for Figure 3. Figure 6 uses the paper's precomputed prediction values and
 recalculates correlations and confidence intervals; it does not retrain models.
