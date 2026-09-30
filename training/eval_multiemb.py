@@ -479,8 +479,16 @@ def main(args):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device("mps" if torch.backends.mps.is_available() else device)
+    requested_device = getattr(args, 'device', 'auto')
+    if requested_device == 'auto':
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device('mps' if torch.backends.mps.is_available() else device)
+    else:
+        if requested_device == 'cuda' and not torch.cuda.is_available():
+            raise RuntimeError('CUDA was requested but is unavailable')
+        if requested_device == 'mps' and not torch.backends.mps.is_available():
+            raise RuntimeError('MPS was requested but is unavailable')
+        device = torch.device(requested_device)
     print(f"device={device}", file=sys.stderr)
 
     with gzip.open(args.ft_gz, 'rb') as f:
@@ -693,6 +701,8 @@ if __name__ == '__main__':
     )
     parser.add_argument('--max_data', type=int, help='limit the number of samples before splitting')
     parser.add_argument('--seed', default=42, help='random seed', type=int)
+    parser.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default='auto',
+                        help='compute device; explicitly requested devices must be available')
     parser.add_argument('--metrics_tsv', help='write per-tissue test metrics as TSV', type=str)
     parser.add_argument('--protein-length-audit', type=str,
                         help='read raw lengths from this transcript audit TSV; fit log1p '
