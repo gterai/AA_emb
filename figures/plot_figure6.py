@@ -151,7 +151,7 @@ def main():
         if suffix == "png":
             kwargs["dpi"] = 300
         elif suffix == "tif":
-            kwargs.update(dpi=600, pil_kwargs={"compression": "tiff_lzw"})
+            kwargs.update(dpi=1200, pil_kwargs={"compression": "tiff_lzw"})
         fig.savefig(args.output_prefix.with_suffix("." + suffix), **kwargs)
     plt.close(fig)
 
