@@ -22,8 +22,5 @@ python tests/check_data.py --input data/processed/input.pkl.gz
 `--strict-hashes` additionally checks exact feature bytes. Generated embeddings
 can differ across environments, so this is stricter than schema compatibility.
 
-The manuscript figures and statistical tables have been compared with author
-reference outputs. For the directory reorganization, published data bytes,
-Figure 3–5 PNGs and generated statistics were checked for changes. Figure 6 was
-rerun with its default 5,000 resampling repetitions. Full GPU training and large
-protein embedding generation were not repeated for this packaging change.
+These checks validate the distributed data and analysis code. They do not rerun
+model training or generate protein embeddings.
