@@ -19,8 +19,18 @@ To check a locally prepared input (requires NumPy):
 python tests/check_data.py --input data/processed/input.pkl.gz
 ```
 
-`--strict-hashes` additionally checks exact feature bytes. Generated embeddings
-can differ across environments, so this is stricter than schema compatibility.
+To compare all 12 reference fields exactly:
+
+```bash
+python tests/check_data.py --input data/processed/input.pkl.gz --strict-hashes
+```
+
+This checks `oht`, `TE`, `x_mask`, `y_mask`, `emb_T5b`, `emb_T5u`, `emb_ank`,
+`emb_ank3`, `emb_esm2`, `emb_esm2L`, `emb_aacom` and `emb_dipep` against the
+hashes in `prepare_input/input_reference.json`. All 12 fields must be present;
+array shapes, data types and value bytes must match. Additional fields are not
+compared. Generated embeddings can differ across environments, so this is
+stricter than schema compatibility.
 
 These checks validate the distributed data and analysis code. They do not rerun
 model training or generate protein embeddings.

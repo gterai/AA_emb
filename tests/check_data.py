@@ -128,22 +128,27 @@ def validate_input(path, strict_hashes=False):
         require(np.isfinite(np.asarray(record['TE'])[mask == 0]).all(), f'{sid}: invalid observed TE')
         require(np.isfinite(record['emb_T5u']).all(), f'{sid}: invalid T5u embedding')
     if strict_hashes:
-        for key in shapes:
+        reference_hashes = ref['key_content_sha256']
+        for sid, record in data.items():
+            missing = sorted(set(reference_hashes) - set(record))
+            require(not missing, f'{sid}: missing reference fields: {", ".join(missing)}')
+        for key in reference_hashes:
             digest = hashlib.sha256()
             for sid in sorted(data):
                 array = np.asarray(data[sid][key])
                 for value in (sid, str(array.dtype), str(array.shape)):
                     digest.update(value.encode())
                 digest.update(np.ascontiguousarray(array).tobytes())
-            require(digest.hexdigest() == ref['key_content_sha256'][key],
+            require(digest.hexdigest() == reference_hashes[key],
                     f'{key}: differs from reference (dtype or generated values may differ)')
-    print('PASS: input schema, cohort, tissues and masks' + ('; exact core hashes.' if strict_hashes else '.'))
+    print('PASS: input schema, cohort, tissues and masks' + (f'; exact hashes for all {len(reference_hashes)} reference fields.' if strict_hashes else '.'))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path)
-    parser.add_argument('--strict-hashes', action='store_true')
+    parser.add_argument('--strict-hashes', action='store_true',
+                        help='Compare all 12 reference fields, including every reference embedding and composition feature')
     args = parser.parse_args()
     validate_assets()
     if args.input:
