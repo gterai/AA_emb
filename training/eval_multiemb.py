@@ -279,10 +279,24 @@ def load_model(num_embeddings):
     return MyCNN_multiemb.CNN_GRU_multiemb
 
 
-def forward_pass(dataloader, model, n_task, device, use_mse_loss, mode, *, optimizer=None):
-    n_data = len(dataloader.dataset)
+def masked_loss_statistics(elementwise_loss, y_mask):
+    """Return loss sum, valid-target count, and mean over valid targets.
 
-    loss_mean = 0.0
+    ``y_mask`` is 0 for an observed target and 1 for a missing target.
+    Keeping the numerator and denominator permits an exact dataset-level loss
+    after batches with different numbers of observed targets are combined.
+    """
+    valid_mask = 1 - y_mask
+    valid_count = valid_mask.sum()
+    if valid_count.item() <= 0:
+        raise ValueError("A batch contains no observed target values")
+    masked_loss_sum = (elementwise_loss * valid_mask).sum()
+    return masked_loss_sum, valid_count, masked_loss_sum / valid_count
+
+
+def forward_pass(dataloader, model, n_task, device, use_mse_loss, mode, *, optimizer=None):
+    loss_sum = 0.0
+    valid_target_count = 0.0
     pred = None
     obs = None
     y_mask = None
@@ -295,7 +309,6 @@ def forward_pass(dataloader, model, n_task, device, use_mse_loss, mode, *, optim
 
     for batch in dataloader:
         *model_inputs, t, y_m, _sid = batch
-        s = model_inputs[0].shape
         model_inputs = [tensor.to(device) for tensor in model_inputs]
         t = t.to(device)
         y_m = y_m.to(device)
@@ -307,15 +320,17 @@ def forward_pass(dataloader, model, n_task, device, use_mse_loss, mode, *, optim
             loss = F.mse_loss(y, t, reduction='none')
         else:
             loss = F.l1_loss(y, t, reduction='none')
-        masked_loss = loss * (1 - y_m)
-        mean_masked_loss = masked_loss.sum() / (1 - y_m).sum()
+        masked_loss_sum, batch_valid_count, mean_masked_loss = (
+            masked_loss_statistics(loss, y_m)
+        )
 
         if mode == "Train":
             optimizer.zero_grad()
             mean_masked_loss.backward()
             optimizer.step()
 
-        loss_mean += mean_masked_loss.item() * s[0] / n_data
+        loss_sum += masked_loss_sum.detach().item()
+        valid_target_count += batch_valid_count.detach().item()
 
         batch_pred = y.detach().cpu().numpy()
         batch_obs = t.detach().cpu().numpy()
@@ -327,6 +342,10 @@ def forward_pass(dataloader, model, n_task, device, use_mse_loss, mode, *, optim
             if y_mask is None
             else np.concatenate((y_mask, batch_y_mask), axis=0)
         )
+
+    if valid_target_count <= 0:
+        raise ValueError("The dataset contains no observed target values")
+    loss_mean = loss_sum / valid_target_count
 
     y_mask = (y_mask == 0).transpose()
     pred = pred.transpose()

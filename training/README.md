@@ -57,7 +57,7 @@ uses `partitions/function_holdout/`. See [partition details](../partitions/READM
 - `--groups`: `c80` for primary, `c50 c70 c90` for protein, GO category IDs for function, or Pfam IDs for pfam.
 - `--seeds`: selected values from 0 to 9; default all ten.
 - `--device`: `cuda`, `cpu`, `mps` or `auto`; full CPU training is slow.
-- `--epochs`: default 100; shorter runs are only for development.
+- `--epochs`: default 200; shorter runs are only for development.
 - `--output`: a fresh output directory.
 - `--save-checkpoints`: save model weights locally; default off.
 - `--dry-run`: print the commands without loading input or training.
@@ -67,7 +67,7 @@ Each run saves `command.json`, `stdout.txt`, `stderr.txt`, `class_used.txt` and
 protein/function outputs are under `training/runs/protein_cluster_baseline/`
 and `training/runs/go_slim_holdout/`. Generated files are ignored by Git.
 
-Training uses Adam (learning rate 1e-4), batch size 100, 100 epochs, masked MAE
+Training uses Adam (learning rate 1e-4), batch size 100, 200 epochs, masked MAE
 and selection by the lowest validation MAE. Protein embeddings remain fixed.
 To match the primary reference runs, its mRNA-only condition uses
 `--emb_name emb_T5u --abl_type p`, which zeros the projected protein branch.

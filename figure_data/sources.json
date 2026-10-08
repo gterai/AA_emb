@@ -1,36 +1,19 @@
 {
-  "manuscript": {
-    "main_pdf_sha256": "58f189716511345f5e361520781079ae12d301173c93f3b797bca215e51b3f70",
-    "supplementary_pdf_sha256": "55b44e829b815893d7ca04dc31d1afa837dcebf68c71921fae58bcf6212403a8"
-  },
+  "result_set": "revision_2026/results/epoch200",
+  "training_epochs": 200,
   "figures": {
-    "3": {
-      "output": "FigMain",
-      "source_analysis": "mrna_c80_reanalysis",
-      "statistics": "Two-sided paired t-tests; Holm across eight comparisons per metric; sample SD across ten runs"
-    },
-    "4": {
-      "output": "FigRob",
-      "source_analysis": [
-        "protein_cluster_baseline",
-        "protein_cluster_controls_train_scaled",
-        "random_t5u_control",
-        "shuffled_t5u_control",
-        "go_slim_holdout",
-        "motif_holdout_training"
-      ],
-      "statistics": "Tissue correlations averaged per run; sample SD; paired gains; train-only length scaling; Pfam panel: mean and sample SD of ten matched within-run gains",
-      "main_pdf_sha256": "c5f56d15a51dd32a1fa25efc0cb19ae5cc6a77ce51cc9a594d8e439cbe31ef32"
-    },
-    "5": {
-      "output": "FigModel",
-      "source_analysis": "model_comparison_c80",
-      "statistics": "Mean of 78 tissue correlations per run; mean and sample SD across ten runs; no significance tests"
-    },
-    "6": {
-      "output": "FigPTR",
-      "source_analysis": "eraslan2019_ptr_sensitivity",
-      "statistics": "Reference OOF prediction medians; 5000 cluster-bootstrap replicates; percentile 95% CI"
-    }
-  }
+    "3": "mrna_c80",
+    "4": [
+      "protein_cluster_baseline",
+      "protein_cluster_controls",
+      "random_encoder",
+      "shuffled_sequence",
+      "go_slim_holdout",
+      "pfam_holdout"
+    ],
+    "5": "model_comparison_c80",
+    "6": "eraslan2019_ptr"
+  },
+  "figure6_predictions": "median across 78 tissue predictions from epoch-200 held-out test sets",
+  "statistics": "Two-sided paired t-tests with Holm correction where shown; sample SD (ddof=1); Figure 6 cluster bootstrap, 5000 resamples"
 }

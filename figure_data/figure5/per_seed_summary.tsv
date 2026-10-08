@@ -1,14 +1,14 @@
 model_key	model	seed	n_tissues	mean_tissue_pearson	mean_tissue_spearman	input_scope	split_relationship
-mrna_only	mRNA-only	0	78	0.659846291	0.665111467	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	1	78	0.671123559	0.673537539	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	2	78	0.656007988	0.656576762	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	3	78	0.651504716	0.655074068	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	4	78	0.651943263	0.65260515	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	5	78	0.650445806	0.656136415	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	6	78	0.653683889	0.657870739	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	7	78	0.656302521	0.657637079	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	8	78	0.642858447	0.646057406	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
-mrna_only	mRNA-only	9	78	0.652491977	0.656822655	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	0	78	0.666839698	0.67119919	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	1	78	0.680371567	0.680385846	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	2	78	0.667726045	0.665634406	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	3	78	0.65953719	0.661305979	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	4	78	0.657426555	0.658607437	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	5	78	0.663888618	0.667547818	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	6	78	0.657063072	0.660646634	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	7	78	0.668337122	0.668043408	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	8	78	0.665582291	0.666612938	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
+mrna_only	mRNA-only	9	78	0.66257509	0.66513629	Full mRNA sequence (six-channel encoding)	Same canonical c80 transcript assignments as mRNA+T5u
 ribonn	RiboNN	0	78	0.651661386	0.647848808	mRNA sequence	Same canonical c80 transcript assignments as mRNA+T5u
 ribonn	RiboNN	1	78	0.664714192	0.661295107	mRNA sequence	Same canonical c80 transcript assignments as mRNA+T5u
 ribonn	RiboNN	2	78	0.651225071	0.64770129	mRNA sequence	Same canonical c80 transcript assignments as mRNA+T5u
@@ -29,23 +29,23 @@ ribonn	RiboNN	9	78	0.660269538	0.659488926	mRNA sequence	Same canonical c80 tran
 5utrbert	5UTRBERT	7	78	0.439014317	0.439513901	5-prime UTR (first 510 nt)	Same canonical c80 transcript assignments as mRNA+T5u
 5utrbert	5UTRBERT	8	78	0.425158076	0.42241485	5-prime UTR (first 510 nt)	Same canonical c80 transcript assignments as mRNA+T5u
 5utrbert	5UTRBERT	9	78	0.453088327	0.451215956	5-prime UTR (first 510 nt)	Same canonical c80 transcript assignments as mRNA+T5u
-mrnabert	mRNABERT	0	78	0.721484249	0.720118024	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
+mrnabert	mRNABERT	0	78	0.722551315	0.721745821	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
 mrnabert	mRNABERT	1	78	0.709122168	0.707662892	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
 mrnabert	mRNABERT	2	78	0.71265316	0.709349271	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
 mrnabert	mRNABERT	3	78	0.713196177	0.706606573	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
-mrnabert	mRNABERT	4	78	0.694182583	0.691221614	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
-mrnabert	mRNABERT	5	78	0.703987056	0.706346847	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
-mrnabert	mRNABERT	6	78	0.703636992	0.695227813	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
-mrnabert	mRNABERT	7	78	0.715971911	0.71323004	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
-mrnabert	mRNABERT	8	78	0.706007994	0.701817488	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
+mrnabert	mRNABERT	4	78	0.697218229	0.693934373	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
+mrnabert	mRNABERT	5	78	0.709965063	0.713055791	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
+mrnabert	mRNABERT	6	78	0.709674188	0.701889041	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
+mrnabert	mRNABERT	7	78	0.715996371	0.712598236	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
+mrnabert	mRNABERT	8	78	0.707075279	0.704773479	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
 mrnabert	mRNABERT	9	78	0.709014002	0.708778499	mRNA sequence (protein-informed pretraining)	Same canonical c80 transcript assignments as mRNA+T5u
 mrna_t5u	mRNA+T5u	0	78	0.727750787	0.725264772	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
-mrna_t5u	mRNA+T5u	1	78	0.731209333	0.732589553	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
-mrna_t5u	mRNA+T5u	2	78	0.715696362	0.714427923	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
-mrna_t5u	mRNA+T5u	3	78	0.721422638	0.720015091	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
-mrna_t5u	mRNA+T5u	4	78	0.722758172	0.721775467	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
-mrna_t5u	mRNA+T5u	5	78	0.719809032	0.723144557	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
+mrna_t5u	mRNA+T5u	1	78	0.732731569	0.734721806	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
+mrna_t5u	mRNA+T5u	2	78	0.718228779	0.71659868	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
+mrna_t5u	mRNA+T5u	3	78	0.723702113	0.722190397	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
+mrna_t5u	mRNA+T5u	4	78	0.724999888	0.724609196	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
+mrna_t5u	mRNA+T5u	5	78	0.721055395	0.724733336	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
 mrna_t5u	mRNA+T5u	6	78	0.721061298	0.718593784	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
-mrna_t5u	mRNA+T5u	7	78	0.722414281	0.720861134	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
-mrna_t5u	mRNA+T5u	8	78	0.721055006	0.716446992	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
-mrna_t5u	mRNA+T5u	9	78	0.716404149	0.715667565	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
+mrna_t5u	mRNA+T5u	7	78	0.725584981	0.724761294	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
+mrna_t5u	mRNA+T5u	8	78	0.726667251	0.721137192	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments
+mrna_t5u	mRNA+T5u	9	78	0.717808223	0.716410408	Full mRNA sequence and fixed T5u protein embedding	Reference transcript assignments

@@ -45,7 +45,7 @@ class WorkflowTests(unittest.TestCase):
                     self.assertTrue(all('partitions/pfam_holdout/' in line for line in commands))
                     for command in commands:
                         tokens = shlex.split(command)
-                        self.assertEqual(tokens[tokens.index('--epoch') + 1], '100')
+                        self.assertEqual(tokens[tokens.index('--epoch') + 1], '200')
                         self.assertEqual(tokens[tokens.index('--lr') + 1], '0.0001')
                         self.assertEqual(tokens[tokens.index('--s_bat') + 1], '100')
                 elif analysis == 'primary':

@@ -78,7 +78,7 @@ def main():
     p.add_argument('--groups', nargs='+')
     p.add_argument('--conditions', nargs='+', choices=sorted(set(ARGS) | set(PRIMARY_ARGS)))
     p.add_argument('--seeds', nargs='+', type=int, default=list(range(10)))
-    p.add_argument('--epochs', type=int, default=100)
+    p.add_argument('--epochs', type=int, default=200)
     p.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default='auto')
     p.add_argument('--save-checkpoints', action='store_true', help='Save locally only (ignored by Git)')
     p.add_argument('--dry-run', action='store_true', help='Validate partitions and print commands without loading input or training')

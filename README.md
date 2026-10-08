@@ -21,7 +21,7 @@ trained checkpoints and original datasets are not distributed.
 Clone the repository and run the commands below from its root directory:
 
 ```bash
-git clone https://github.com/gterai/AA_emb_private AA_emb
+git clone https://github.com/gterai/AA_emb AA_emb
 cd AA_emb
 ```
 
