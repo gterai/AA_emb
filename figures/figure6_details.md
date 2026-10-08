@@ -22,9 +22,11 @@ supported workflow; recalculating the figure from these predictions is supported
 
 ## Calculations
 
-The main scatterplots compare median observed PTR across available tissues with
-median predicted TE. Tissue-specific correlations compare observed PTR in each
-tissue with the same median TE prediction, not a matched output head.
+Panel (b) shows the density of transcripts by median observed PTR across
+available tissues and median predicted TE. Both hexagon plots use the same
+logarithmic transcript-count scale.
+Tissue-specific correlations compare observed PTR in each tissue with the same
+median TE prediction, not a matched output head.
 Confidence intervals for paired correlation differences sample whole protein
 clusters with replacement 5,000 times and take the 2.5th/97.5th percentiles.
 The default random seed is 20260826. Expected results are in

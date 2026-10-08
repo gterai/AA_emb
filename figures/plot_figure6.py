@@ -9,6 +9,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 import json
 from ptr_data import ROOT, load_inputs, calculate
 import numpy as np
@@ -80,18 +81,31 @@ def main():
     ax.text(0.07, -0.04, "Prediction: median TE across 78 output heads", transform=ax.transAxes,
             fontsize=10.2, color=GRAY)
 
-    # B: transcript-level scatter plots, two subfacets
-    inner = outer[0, 1].subgridspec(1, 2, wspace=0.23)
-    scatter_axes = [fig.add_subplot(inner[0, 0]), fig.add_subplot(inner[0, 1])]
+    # B: transcript-level density plots with a shared logarithmic count scale
+    inner = outer[0, 1].subgridspec(1, 3, width_ratios=[1, 1, 0.07], wspace=0.23)
+    density_axes = [fig.add_subplot(inner[0, 0]), fig.add_subplot(inner[0, 1])]
+    density_cax = fig.add_subplot(inner[0, 2])
     xpad = 0.04 * (ptr.max() - ptr.min())
     ymin = min(pred0.min(), pred1.min()); ymax = max(pred0.max(), pred1.max())
     ypad = 0.04 * (ymax - ymin)
+    gridsize = 40
+    density_counts = []
+    for pred in (pred0, pred1):
+        temporary_hexbin = density_axes[0].hexbin(ptr, pred, gridsize=gridsize, mincnt=1)
+        density_counts.extend(temporary_hexbin.get_array().tolist())
+        temporary_hexbin.remove()
+    density_norm = LogNorm(vmin=1, vmax=max(density_counts))
+
+    density_artist = None
     for j, (sax, pred, title, col) in enumerate([
-        (scatter_axes[0], pred0, "mRNA-only", BLUE),
-        (scatter_axes[1], pred1, "mRNA+T5u", ORANGE),
+        (density_axes[0], pred0, "mRNA-only", "#8B0000"),
+        (density_axes[1], pred1, "mRNA+T5u", "#8B0000"),
     ]):
-        sax.scatter(ptr, pred, s=6, color=col, alpha=0.28,
-                    linewidth=0, rasterized=True)
+        density_artist = sax.hexbin(
+            ptr, pred, gridsize=gridsize, mincnt=1, cmap="YlOrRd",
+            norm=density_norm, linewidths=0.25, edgecolors="white",
+            rasterized=True,
+        )
         fit = np.polyfit(ptr, pred, 1); xx = np.linspace(ptr.min(), ptr.max(), 100)
         sax.plot(xx, np.polyval(fit, xx), color=col, lw=1.8)
         r = pearsonr(ptr, pred).statistic
@@ -106,7 +120,9 @@ def main():
         sax.grid(color=LIGHT, lw=0.6, zorder=0)
         sax.set_xlim(ptr.min() - xpad, ptr.max() + xpad)
         sax.set_ylim(ymin - ypad, ymax + ypad)
-    panel_label(scatter_axes[0], "(b)")
+    density_cbar = fig.colorbar(density_artist, cax=density_cax)
+    density_cbar.set_label("Transcripts per hexagon (log scale)")
+    panel_label(density_axes[0], "(b)")
 
     # C: forest plot of Spearman differences
     ax = fig.add_subplot(outer[1, 0]); panel_label(ax, "(c)")
